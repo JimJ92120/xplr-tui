@@ -4,13 +4,14 @@ use std::{
     thread::sleep,
     time::Duration
 };
+use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 
 mod helpers;
 mod app;
 mod client;
 
 use app::App;
-use client::Client;
+use client::{Client, ClientState};
 
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
@@ -31,8 +32,15 @@ fn main() -> Result<()> {
     println!("current: {:?}", app.get_current_directory_name());
     println!("list: {:?}", app.get_directory_list());
 
-    let mut client = Client::new(|| Ok(crossterm::event::read()?.is_key_press()));
-    println!("client: {:?}", client);
+    let state = ClientState {
+        is_running: false,
+        frame: 0,
+        count: 0
+    };
+    let mut client = Client::new(
+        state,
+        event_callback
+    );
 
     sleep(Duration::from_secs(2));
 
@@ -40,3 +48,19 @@ fn main() -> Result<()> {
 
     Ok(())
 }
+
+fn event_callback(state: &mut ClientState) -> Result<()> {
+    if let Event::Key(key) = event::read()? {
+        if KeyEventKind::Press == key.kind {
+            match key.code {
+                KeyCode::Char('q') | KeyCode::Esc => { state.is_running = false}
+                KeyCode::Up => { state.count += 1 },
+                KeyCode::Down => { state.count -=1 },
+                _ => {}
+            };
+        } 
+    };
+
+    Ok(())
+}
+
