@@ -27,7 +27,10 @@ pub struct ClientState {
 
 #[derive(Debug)]
 pub struct ClientData {
-    pub count: isize
+    pub count: isize,
+    pub directory_name: String,
+    pub directory_content: Vec<String>,
+    pub text_input: String
 }
 
 #[derive(Debug)]
@@ -74,15 +77,16 @@ impl Client {
     fn get_view_data(&self) -> ViewModel {
         ViewModel {
             header: HeaderData {
-                title: "XPLR".to_string()
+                title: "XPLR".to_string(),
+                count: self.data.count,
+                frame: self.state.frame
             },
             content: ContentData {
-                text: "Hello World".to_string(),
-                count: self.data.count
+                directory_name: self.data.directory_name.clone(),
+                directory_content: self.data.directory_content.clone()
             },
             footer: FooterData {
-                text: "(Footer)".to_string(),
-                frame: self.state.frame
+                text_input: self.data.text_input.clone(),
             }
         }
     }

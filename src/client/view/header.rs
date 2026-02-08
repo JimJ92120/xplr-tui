@@ -6,7 +6,9 @@ use ratatui::{
 
 #[derive(Debug)]
 pub struct HeaderData {
-    pub title: String
+    pub title: String,
+    pub count: isize,
+    pub frame: usize
 }
 
 #[derive(Debug)]
@@ -14,7 +16,7 @@ pub struct Header {}
 
 impl Header {
     pub fn render(area: Rect, buffer: &mut Buffer, data: HeaderData) {
-        Paragraph::new(data.title)
+        Paragraph::new(format!("{} | count: {} | frame: {}", data.title, data.count, data.frame))
             .render(area, buffer);
     }
 }

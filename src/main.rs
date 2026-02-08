@@ -30,14 +30,16 @@ fn main() -> Result<()> {
 
     let app = App::new(root_directory_name);
     println!("current: {:?}", app.get_current_directory_name());
-    println!("list: {:?}", app.get_directory_list());
 
     let state = ClientState {
         is_running: false,
         frame: 0,
     };
     let data = ClientData {
-        count: 0
+        count: 0,
+        directory_name: app.get_current_directory_name(),
+        directory_content: app.get_current_directory_content(),
+        text_input: String::new()
     };
     let mut client = Client::new(
         state,
@@ -56,9 +58,10 @@ fn event_callback(state: &mut ClientState, data: &mut ClientData) -> Result<()> 
     if let Event::Key(key) = event::read()? {
         if KeyEventKind::Press == key.kind {
             match key.code {
-                KeyCode::Char('q') | KeyCode::Esc => { state.is_running = false}
+                KeyCode::Esc => { state.is_running = false}
                 KeyCode::Up => { data.count += 1 },
                 KeyCode::Down => { data.count -=1 },
+                KeyCode::Char(c) => { data.text_input.push(c) },
                 _ => {}
             };
         } 

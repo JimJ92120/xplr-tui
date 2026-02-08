@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 
 mod directory;
+use directory::{DirectoryContent};
 
-type DirectoryList = HashMap<String, directory::DirectoryContent>;
+type DirectoryList = HashMap<String, DirectoryContent>;
 
 #[derive(Debug)]
 pub struct App {
@@ -31,8 +32,11 @@ impl App {
         self.current_directory_name.clone()
     }
 
-    pub fn get_directory_list(&self) -> DirectoryList {
-        self.directory_list.clone()
+    pub fn get_current_directory_content(&self) -> DirectoryContent {
+        self.directory_list
+            .get(&self.current_directory_name).clone()
+            .unwrap_or(&(Vec::new() as DirectoryContent))
+            .clone()
     }
 
     fn set_current_directory(&mut self, directory_name: String) {

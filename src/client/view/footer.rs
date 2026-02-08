@@ -6,8 +6,7 @@ use ratatui::{
 
 #[derive(Debug)]
 pub struct FooterData {
-    pub text: String,
-    pub frame: usize
+    pub text_input: String
 }
 
 #[derive(Debug)]
@@ -15,7 +14,7 @@ pub struct Footer {}
 
 impl Footer {
     pub fn render(area: Rect, buffer: &mut Buffer, data: FooterData) {
-        Paragraph::new(format!("{} | frame: {}", data.text, data.frame))
+        Paragraph::new(format!("Input: {}", data.text_input))
             .render(area, buffer);
     }
 }
