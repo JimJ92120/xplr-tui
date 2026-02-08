@@ -11,7 +11,7 @@ mod app;
 mod client;
 
 use app::App;
-use client::{Client, ClientState};
+use client::{Client, ClientState, ClientData};
 
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
@@ -35,10 +35,13 @@ fn main() -> Result<()> {
     let state = ClientState {
         is_running: false,
         frame: 0,
+    };
+    let data = ClientData {
         count: 0
     };
     let mut client = Client::new(
         state,
+        data,
         event_callback
     );
 
@@ -49,13 +52,13 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn event_callback(state: &mut ClientState) -> Result<()> {
+fn event_callback(state: &mut ClientState, data: &mut ClientData) -> Result<()> {
     if let Event::Key(key) = event::read()? {
         if KeyEventKind::Press == key.kind {
             match key.code {
                 KeyCode::Char('q') | KeyCode::Esc => { state.is_running = false}
-                KeyCode::Up => { state.count += 1 },
-                KeyCode::Down => { state.count -=1 },
+                KeyCode::Up => { data.count += 1 },
+                KeyCode::Down => { data.count -=1 },
                 _ => {}
             };
         } 
