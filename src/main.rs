@@ -1,9 +1,20 @@
+use std::{
+    io::{Result},
+    thread::sleep,
+    time::Duration
+};
+
 mod client;
 
-fn main() -> color_eyre::Result<()> {
-    color_eyre::install()?;
+use client::Client;
 
-    client::run()?;
+fn main() -> Result<()> {
+    let mut client = Client::new(|| Ok(crossterm::event::read()?.is_key_press()));
+    println!("client: {:?}", client);
+
+    sleep(Duration::from_secs(2));
+
+    client.run()?;
 
     Ok(())
 }

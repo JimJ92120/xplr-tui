@@ -2,21 +2,37 @@ use std::io::{Result};
 
 use ratatui::{DefaultTerminal, Frame};
 
-pub fn run() -> color_eyre::Result<()> {
-    ratatui::run(app)?;
+type StopCallback = fn() -> Result<bool>;
 
-    Ok(())
+#[derive(Debug)]
+pub struct Client {
+    stop_callback: StopCallback
 }
 
-fn app(terminal: &mut DefaultTerminal) -> Result<()> {
-    loop {
-        terminal.draw(render)?;
-        if crossterm::event::read()?.is_key_press() {
-            break Ok(());
+impl Client {
+    pub fn new(stop_callback: StopCallback) -> Self {
+        Self {
+            stop_callback
         }
     }
-}
 
-fn render(frame: &mut Frame) {
-    frame.render_widget("hello world", frame.area());
+    pub fn run(&mut self) -> Result<()> {
+        ratatui::run(|terminal| self.render(terminal))?;
+
+        Ok(())
+    }
+
+    fn render(&mut self, terminal: &mut DefaultTerminal) -> Result<()> {
+        loop {
+            terminal.draw(|frame| self.render_frame(frame))?;
+
+            if (self.stop_callback)()? {
+                break Ok(());
+            }
+        }
+    }
+
+    fn render_frame(&self, frame: &mut Frame) {
+        frame.render_widget("hello world", frame.area());
+    }
 }
