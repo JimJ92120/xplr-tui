@@ -5,6 +5,7 @@ use ratatui::{
         Layout,
         Rect
     },
+    text::{Line},
     widgets::{
         Widget,
         Block,
@@ -12,7 +13,7 @@ use ratatui::{
     },
 };
 
-use super::components::list::{ListComponent, ListData};
+use super::components::list::{List, ListData};
 
 #[derive(Clone)]
 pub struct ContentData {
@@ -41,7 +42,34 @@ impl Content {
             Constraint::Fill(1),
         ]).areas(area);
 
-        let directory_list_string = if data.parent_directory_list.is_empty() {
+        Block::new()
+            .title(Self::get_directory_list(data.clone()))
+            .render(title_container, buffer);
+        List::render(
+            list_container,
+            buffer,
+            ListData {
+                list: data.directory_content.clone(),
+                selected_item_index: data.selected_item_index
+            }
+        );
+    }
+
+    fn render_right_container(area: Rect, buffer: &mut Buffer, data: ContentData) {
+        let [title_container, details_container] = Layout::vertical([
+            Constraint::Length(2),
+            Constraint::Fill(1)
+        ]).areas(area);
+
+        Block::new()
+            .title(String::from("Details"))
+            .render(title_container, buffer);
+        Paragraph::new(Self::get_details(data))
+            .render(details_container, buffer);
+    }
+
+    fn get_directory_list(data: ContentData) -> String {
+        if data.parent_directory_list.is_empty() {
             data.directory_name.clone()
         } else {
             let mut directory_list = data.parent_directory_list.clone();
@@ -65,44 +93,36 @@ impl Content {
                 })
                 .collect::<Vec<String>>()
                 .join("")
-        };
-
-        Block::new()
-            .title(directory_list_string.to_string())
-            .render(title_container, buffer);
-        ListComponent::render(
-            list_container,
-            buffer,
-            ListData {
-                list: data.directory_content.clone(),
-                selected_item_index: data.selected_item_index
-            }
-        );
+                .to_string()
+        }
     }
 
-    fn render_right_container(area: Rect, buffer: &mut Buffer, data: ContentData) {
-        let [title_container, details_container] = Layout::vertical([
-            Constraint::Length(2),
-            Constraint::Fill(1)
-        ]).areas(area);
+    fn get_details(data: ContentData) -> Vec<Line<'static>> {
+        let mut details: Vec<Line> = vec![
+            Line::from("Item:"),
+            Line::from(format!(
+                "- name: {}",
+                data.directory_content[data.selected_item_index].0
+            )),
+            Line::from(format!(
+                "- type: {}",
+                data.directory_content[data.selected_item_index].1
+            )),
+            Line::from(""),
+        ];
 
-        let parent_directory_list_string = if data.parent_directory_list.is_empty() {
-            String::from("No parents found.")
+        if data.parent_directory_list.is_empty() {
+            details.push(Line::from("No parents found."));
         } else {
-            format!("- {}", data.parent_directory_list.join("\n- "))
-        };
+            data.parent_directory_list
+                .iter()
+                .for_each(|item| {
+                    details.push(Line::from(
+                        format!("- {}", item)
+                    ));
+                })
+        }
 
-        Block::new()
-            .title(String::from("Details"))
-            .render(title_container, buffer);
-        Paragraph::new(
-            format!(
-                "Item:\n- name: {}\n- type: {}\n\nParents:\n{}",
-                data.directory_content[data.selected_item_index].0,
-                data.directory_content[data.selected_item_index].1,
-                parent_directory_list_string
-            )
-        )
-            .render(details_container, buffer);
+        details
     }
 }
