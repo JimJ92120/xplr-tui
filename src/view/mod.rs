@@ -20,7 +20,7 @@ use ratatui::{
 mod components;
 mod layout;
 
-use crate::{ Controller, State };
+use crate::{ State };
 use layout::{
     header::{
         Header,
@@ -105,17 +105,22 @@ impl View {
 
     fn event_callback(&mut self) -> Result<()> {
         if let Event::Key(key) = event::read()? {
+            let View {
+                state,
+                ..
+            } = self;
+
             if KeyEventKind::Press == key.kind {
                 match key.code {
-                    KeyCode::Esc => Controller::stop(&mut self.state),
+                    KeyCode::Esc => state.stop(),
 
-                    KeyCode::Up => Controller::select_previous_item(&mut self.state),
-                    KeyCode::Down => Controller::select_next_item(&mut self.state),
+                    KeyCode::Up => state.select_previous_item(),
+                    KeyCode::Down => state.select_next_item(),
 
-                    KeyCode::Right => Controller::load_next_directory(&mut self.state),
-                    KeyCode::Left => Controller::load_previous_directory(&mut self.state),
+                    KeyCode::Right => state.load_next_directory(),
+                    KeyCode::Left => state.load_previous_directory(),
 
-                    KeyCode::Char(char) => Controller::type_text(&mut self.state, char),
+                    KeyCode::Char(char) => state.type_text(char),
                 
                     _ => {}
                 };

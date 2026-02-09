@@ -7,11 +7,11 @@ use std::{
 
 mod api;
 mod view;
-mod controller;
+mod state;
 
 use api::Api;
 use view::View;
-use controller::{ Controller, State };
+use state::State;
 
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
@@ -27,7 +27,7 @@ fn main() -> Result<()> {
 
     let root_directory_name = Api::get_root_directory_name(path_name)?;
 
-    let state = State {
+    let state = State::new(State {
         is_running: false,
         title: String::from("XPLR"),
         directory_name: root_directory_name.clone(),
@@ -35,7 +35,7 @@ fn main() -> Result<()> {
         selected_item_index: 0,
         parent_directory_list: Vec::new(),
         text_input: String::new()
-    };
+    });
     let mut view = View::new(state);
 
     println!("Starting...");
