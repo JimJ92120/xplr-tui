@@ -30,7 +30,7 @@ use footer::{
     FooterData
 };
 
-type EventCallback = fn(state: &mut ClientState) -> Result<()>;
+type EventCallback = fn(state: &mut State) -> Result<()>;
 
 pub struct ViewModel {
     pub header: HeaderData,
@@ -39,7 +39,7 @@ pub struct ViewModel {
 }
 
 #[derive(Clone)]
-pub struct ClientState {
+pub struct State {
     pub is_running: bool,
     pub title: String,
     pub directory_name: String,
@@ -49,13 +49,13 @@ pub struct ClientState {
     pub text_input: String
 }
 
-pub struct Client {
-    state: ClientState,
+pub struct View {
+    state: State,
     event_callback: EventCallback
 }
 
-impl Client {
-    pub fn new(state: ClientState, event_callback: EventCallback) -> Self {
+impl View {
+    pub fn new(state: State, event_callback: EventCallback) -> Self {
         Self {
             state,
             event_callback
@@ -86,7 +86,7 @@ impl Client {
     }
 
     fn get_view_data(&self) -> ViewModel {
-        let ClientState {
+        let State {
             title,
             directory_name,
             directory_content,
@@ -113,7 +113,7 @@ impl Client {
     }
 }
 
-impl Widget for &mut Client {
+impl Widget for &mut View {
     fn render(self, area: Rect, buffer: &mut Buffer) {
         let [header_container, container_container, footer_container] = Layout::vertical([
             Constraint::Length(2),

@@ -12,11 +12,11 @@ use crossterm::event::{
 };
 
 mod api;
-mod client;
+mod view;
 mod controller;
 
 use api::Api;
-use client::{Client, ClientState};
+use view::{View, State};
 use controller::Controller;
 
 fn main() -> Result<()> {
@@ -33,7 +33,7 @@ fn main() -> Result<()> {
 
     let root_directory_name = Api::get_root_directory_name(path_name)?;
 
-    let state = ClientState {
+    let state = State {
         is_running: false,
         title: String::from("XPLR"),
         directory_name: root_directory_name.clone(),
@@ -42,7 +42,7 @@ fn main() -> Result<()> {
         parent_directory_list: Vec::new(),
         text_input: String::new()
     };
-    let mut client = Client::new(
+    let mut view = View::new(
         state,
         event_callback
     );
@@ -50,14 +50,14 @@ fn main() -> Result<()> {
     println!("Starting...");
     sleep(Duration::from_secs(1));
 
-    client.run()?;
+    view.run()?;
 
     println!("Done!");
 
     Ok(())
 }
 
-fn event_callback(state: &mut ClientState) -> Result<()> {
+fn event_callback(state: &mut State) -> Result<()> {
     if let Event::Key(key) = event::read()? {
         if KeyEventKind::Press == key.kind {
             match key.code {

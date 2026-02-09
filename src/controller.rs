@@ -1,26 +1,26 @@
-use crate::ClientState;
+use crate::State;
 use crate::Api;
 
 pub struct Controller {}
 
 impl Controller {
-    pub fn stop(state: &mut ClientState) {
+    pub fn stop(state: &mut State) {
         state.is_running = false;
     }
 
-    pub fn select_next_item(state: &mut ClientState) {
+    pub fn select_next_item(state: &mut State) {
         if state.selected_item_index < state.directory_content.len() - 1 {
             state.selected_item_index +=1;
         }
     }
-    pub fn select_previous_item(state: &mut ClientState) {
+    pub fn select_previous_item(state: &mut State) {
         if state.selected_item_index > 0 {
             state.selected_item_index -= 1;
         }
     }
 
-    pub fn load_next_directory(state: &mut ClientState) {
-        let ClientState {
+    pub fn load_next_directory(state: &mut State) {
+        let State {
             directory_content,
             selected_item_index,
             directory_name,
@@ -43,8 +43,8 @@ impl Controller {
             };
         } 
     }
-    pub fn load_previous_directory(state: &mut ClientState) {
-        let ClientState {
+    pub fn load_previous_directory(state: &mut State) {
+        let State {
             directory_name,
             parent_directory_list,
             ..
@@ -76,7 +76,7 @@ impl Controller {
         };
     }
 
-    pub fn type_text(state: &mut ClientState, char: char) {
+    pub fn type_text(state: &mut State, char: char) {
         state.text_input.push(char);
     }
 }
