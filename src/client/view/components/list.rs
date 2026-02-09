@@ -1,8 +1,16 @@
 use ratatui::{
     buffer::Buffer,
     layout::{Rect},
-    widgets::{Widget, Paragraph, List, ListItem},
-    style::{Color, Stylize}
+    widgets::{
+        Widget,
+        Paragraph,
+        List,
+        ListItem,
+    },
+    style::{
+        Color,
+        Stylize
+    }
 };
 
 pub struct ListData {
@@ -42,7 +50,7 @@ impl ListComponent {
     }
 
     fn render_list(items: Vec<ListItem>) -> List {
-        List::new(items)        
+        List::new(items)
     }
 
     fn render_list_item(content: String, index: usize) -> ListItem<'static> {
