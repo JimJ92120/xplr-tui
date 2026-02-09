@@ -26,19 +26,16 @@ fn main() -> Result<()> {
     }
 
     let root_directory_name = helpers::get_root_directory_name(path_name)?;
-    println!("root dir: {}", root_directory_name);
-
     let app = App::new(root_directory_name);
-    println!("current: {:?}", app.get_current_directory_name());
 
     let state = ClientState {
         is_running: false,
         frame: 0,
     };
     let data = ClientData {
-        count: 0,
         directory_name: app.get_current_directory_name(),
         directory_content: app.get_current_directory_content(),
+        selected_item_index: 0,
         text_input: String::new()
     };
     let mut client = Client::new(
@@ -47,9 +44,12 @@ fn main() -> Result<()> {
         event_callback
     );
 
-    sleep(Duration::from_secs(2));
+    println!("Starting XPLR...");
+    sleep(Duration::from_secs(1));
 
     client.run()?;
+
+    println!("Done!");
 
     Ok(())
 }
@@ -59,9 +59,17 @@ fn event_callback(state: &mut ClientState, data: &mut ClientData) -> Result<()> 
         if KeyEventKind::Press == key.kind {
             match key.code {
                 KeyCode::Esc => { state.is_running = false}
-                KeyCode::Up => { data.count += 1 },
-                KeyCode::Down => { data.count -=1 },
-                KeyCode::Char(c) => { data.text_input.push(c) },
+                KeyCode::Up => {
+                    if data.selected_item_index > 0 {
+                        data.selected_item_index -= 1;
+                    }
+                },
+                KeyCode::Down => {
+                    if data.selected_item_index < data.directory_content.len() - 1 {
+                        data.selected_item_index +=1;
+                    }
+                },
+                KeyCode::Char(char) => { data.text_input.push(char) },
                 _ => {}
             };
         } 
@@ -69,4 +77,3 @@ fn event_callback(state: &mut ClientState, data: &mut ClientData) -> Result<()> 
 
     Ok(())
 }
-

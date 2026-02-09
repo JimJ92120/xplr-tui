@@ -27,9 +27,9 @@ pub struct ClientState {
 
 #[derive(Debug)]
 pub struct ClientData {
-    pub count: isize,
     pub directory_name: String,
     pub directory_content: Vec<String>,
+    pub selected_item_index: usize,
     pub text_input: String
 }
 
@@ -78,12 +78,13 @@ impl Client {
         ViewModel {
             header: HeaderData {
                 title: "XPLR".to_string(),
-                count: self.data.count,
-                frame: self.state.frame
+                frame: self.state.frame,
+                selected_item_index: self.data.selected_item_index
             },
             content: ContentData {
                 directory_name: self.data.directory_name.clone(),
-                directory_content: self.data.directory_content.clone()
+                directory_content: self.data.directory_content.clone(),
+                selected_item_index: self.data.selected_item_index
             },
             footer: FooterData {
                 text_input: self.data.text_input.clone(),

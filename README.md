@@ -6,3 +6,4 @@ A terminal file manager.
 
 - https://ratatui.rs/
 - https://docs.rs/crossterm/latest/crossterm/
+- https://ratatui.rs/examples/widgets/list/

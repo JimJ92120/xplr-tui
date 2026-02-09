@@ -45,7 +45,6 @@ impl App {
         if self.directory_list.contains_key(&self.current_directory_name) {
             println!("'{}' already added.", directory_name);
         } else {
-            println!("adding '{}'.", directory_name);
             self.add_directory(self.current_directory_name.clone());
         }
     }
