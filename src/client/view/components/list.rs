@@ -4,9 +4,8 @@ use ratatui::{
     widgets::{
         Widget,
         Paragraph,
-        List,
-        ListItem,
     },
+    text::{Line},
     style::{
         Color,
         Stylize
@@ -15,50 +14,49 @@ use ratatui::{
 
 pub struct ListData {
     pub list: Vec<(String, String)>,
-    pub selected_item_index: usize
+    pub selected_item_index: usize,
 }
 
-pub struct ListComponent {}
+pub struct List {}
 
-impl ListComponent {
+impl List {
     pub fn render(area: Rect, buffer: &mut Buffer, data: ListData) {
         if data.list.is_empty() {
-            Paragraph::new("No item found.")
-                .render(area, buffer);
+            Self::render_no_list(area, buffer);
         } else {
-            ListComponent::render_list(
-                data.list
-                    .iter()
-                    .enumerate()
-                    .map(|(index, content)| {
-                        let list_item = ListComponent::render_list_item(
-                            content.0.to_string(),
-                            index
-                        );
-
-                        if data.selected_item_index == index {
-                            return ListComponent::highlight_list_item(list_item);
-                        }
-
-                        list_item
-                    })
-                    .collect()
-            )
-                .render(area, buffer);
-                
+            Self::render_list(area, buffer, data);                
         }
     }
 
-    fn render_list(items: Vec<ListItem>) -> List {
-        List::new(items)
+    fn render_no_list(area: Rect, buffer: &mut Buffer) {
+        Paragraph::new("No item found.")
+            .render(area, buffer);
     }
 
-    fn render_list_item(content: String, index: usize) -> ListItem<'static> {
-        ListItem::from(format!("{}.{}", index + 1, content))
-    }
+    fn render_list(area: Rect, buffer: &mut Buffer, data: ListData) {
+        let selected_item_index = data.selected_item_index as u16;
+        let scroll = if selected_item_index < area.height {
+            0
+        } else {
+            selected_item_index - area.height + 1
+        };
 
-    fn highlight_list_item(list_item: ListItem<'static>) -> ListItem<'static> {
-        list_item
-            .bg(Color::Green)
+        Paragraph::new(
+            data.list
+                .iter()
+                .enumerate()
+                .map(|(index, item)| {
+                    let line = Line::from(format!("{}.{}", index, item.0));
+
+                    if data.selected_item_index == index {
+                        return line.bg(Color::Green);
+                    }
+
+                    line
+                })
+                .collect::<Vec<Line>>()
+        )
+            .scroll((scroll, 0))
+            .render(area, buffer);
     }
 }
