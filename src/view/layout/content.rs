@@ -141,7 +141,7 @@ impl Content {
         details
     }
 
-    pub fn get_preview(data: ContentData) -> String {
+    fn get_preview(data: ContentData) -> String {
         let ContentData {
             selected_item,
             preview,
