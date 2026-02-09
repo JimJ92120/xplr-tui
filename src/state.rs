@@ -8,7 +8,8 @@ pub struct State {
     directory_content: Vec<(String, String)>,
     selected_item_index: usize,
     parent_directory_list: Vec<String>,
-    text_input: String
+    text_input: String,
+    preview: String,
 }
 
 impl State {
@@ -28,7 +29,8 @@ impl State {
             directory_name,
             selected_item_index: 0,
             parent_directory_list: Vec::new(),
-            text_input: String::new()
+            text_input: String::new(),
+            preview: String::new()
         }
     }
 
@@ -53,6 +55,22 @@ impl State {
     pub fn text_input(&self) -> String {
         self.text_input.clone()
     }
+    pub fn preview(&self) -> String {
+        self.preview.clone()
+    }
+    pub fn selected_item(&self) -> Option<(String, String)> {
+        let State {
+            directory_content,
+            selected_item_index,
+            ..
+        } = self;
+
+        if directory_content.is_empty() {
+            return None;
+        }
+
+        Some(directory_content[*selected_item_index].clone())
+    }
 
     pub fn start(&mut self) {
         self.is_running = true;
@@ -64,20 +82,20 @@ impl State {
 
     pub fn select_next_item(&mut self) {
         if self.selected_item_index < self.directory_content.len() - 1 {
-            self.selected_item_index +=1;
+            self.update_selected_item_index(self.selected_item_index + 1);
         }
     }
     pub fn select_previous_item(&mut self) {
         if self.selected_item_index > 0 {
-            self.selected_item_index -= 1;
+            self.update_selected_item_index(self.selected_item_index - 1);
         }
     }
     pub fn select_first_item(&mut self) {
-        self.selected_item_index = 0;
+        self.update_selected_item_index(0);
     }
     pub fn select_last_item(&mut self) {
         if !self.directory_content.is_empty() {
-            self.selected_item_index = self.directory_content.len() - 1;
+            self.update_selected_item_index(self.directory_content.len() - 1);
         } else {
             self.selected_item_index = 0;
         }
@@ -85,12 +103,10 @@ impl State {
 
     pub fn load_next_directory(&mut self) {
         let State {
-            directory_content,
-            selected_item_index,
             directory_name,
             ..
         } = self.clone();
-        let selected_item = directory_content[selected_item_index].clone();
+        let selected_item = self.selected_item().unwrap();
 
         if "directory" == selected_item.1 {
             let next_directory_name = selected_item.0.clone();
@@ -142,5 +158,38 @@ impl State {
 
     pub fn type_text(&mut self, char: char) {
         self.text_input.push(char);
+    }
+
+    fn update_selected_item_index(&mut self, new_index: usize) {        
+        // bound to check before calling to avoid unnecessary checks at runtime
+        self.selected_item_index = new_index;
+        self.clear_preview();
+
+        match self.selected_item() {
+            Some(item) => {
+                if "file" == item.1 {
+                    self.load_preview();
+                }
+            },
+            None => ()
+        }
+    }
+
+    fn clear_preview(&mut self) {
+        self.preview = String::new()
+    }
+    fn load_preview(&mut self) {
+        let selected_item = self.selected_item();
+
+        match selected_item {
+            Some(item) => {
+                self.preview = format!(
+                    "- name: {}\n- type: {}",
+                    item.0,
+                    item.1
+                )
+            },
+            None => ()
+        }
     }
 }

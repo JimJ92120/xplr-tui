@@ -22,7 +22,9 @@ pub struct ContentData {
     pub directory_name: String,
     pub directory_content: Vec<(String, String)>,
     pub selected_item_index: usize,
-    pub parent_directory_list: Vec<String>
+    pub selected_item: Option<(String, String)>,
+    pub parent_directory_list: Vec<String>,
+    pub preview: String,
 }
 
 pub struct Content {}
@@ -63,16 +65,15 @@ impl Content {
     }
 
     fn render_right_container(area: Rect, buffer: &mut Buffer, data: ContentData) {
-        let [title_container, details_container] = Layout::vertical([
-            Constraint::Length(2),
-            Constraint::Fill(1)
+        let [details_container, preview_container] = Layout::vertical([
+            Constraint::Length(3),
+            Constraint::Fill(1),
         ]).areas(area);
 
-        Block::new()
-            .title(String::from("Details"))
-            .render(title_container, buffer);
-        Paragraph::new(Self::get_details(data))
+        Paragraph::new(Self::get_details(data.clone()))
             .render(details_container, buffer);
+        Paragraph::new(Self::get_preview(data.clone()))
+            .render(preview_container, buffer);
     }
 
     fn get_directory_list(data: ContentData) -> String {
@@ -112,43 +113,47 @@ impl Content {
 
     fn get_details(data: ContentData) -> Vec<Line<'static>> {
         let ContentData {
-            selected_item_index,
-            parent_directory_list,
-            directory_content,
+            selected_item,
             ..
         } = data;
 
-        let mut details: Vec<Line> = if !directory_content.is_empty() {
+        let details: Vec<Line> = if !selected_item.is_none() {
+            let selected_item = selected_item.unwrap();
+
             vec![
                 Line::from("Item:"),
                 Line::from(format!(
                     "- name: {}",
-                    directory_content[selected_item_index].0
+                    selected_item.0
                 )),
                 Line::from(format!(
                     "- type: {}",
-                    directory_content[selected_item_index].1
+                    selected_item.1
                 )),
                 Line::from(""),
             ]
         } else {
             vec![
-                Line::from("No content found.")
+                Line::from("No item selected.")
             ]
         };
 
-        if parent_directory_list.is_empty() {
-            details.push(Line::from("No parents found."));
-        } else {
-            parent_directory_list
-                .iter()
-                .for_each(|item| {
-                    details.push(Line::from(
-                        format!("- {}", item)
-                    ));
-                })
+        details
+    }
+
+    pub fn get_preview(data: ContentData) -> String {
+        let ContentData {
+            selected_item,
+            preview,
+            ..
+        } = data.clone();
+
+        if selected_item.is_none() {
+            return String::from("\nNo item selected.");
+        } else if "" == preview {
+            return String::from("\nNo preview available.");
         }
 
-        details
+        format!("\nPreview:\n{}", data.preview)
     }
 }

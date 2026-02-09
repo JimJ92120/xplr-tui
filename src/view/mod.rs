@@ -90,7 +90,9 @@ impl View {
                 directory_name: state.directory_name(),
                 directory_content: state.directory_content(),
                 selected_item_index: state.selected_item_index(),
-                parent_directory_list: state.parent_directory_list()
+                selected_item: state.selected_item(),
+                parent_directory_list: state.parent_directory_list(),
+                preview: state.preview(),
             },
             footer: FooterData {
                 text_input: state.text_input(),
