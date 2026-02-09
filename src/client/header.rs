@@ -9,8 +9,6 @@ use ratatui::{
 
 pub struct HeaderData {
     pub title: String,
-    pub frame: usize,
-    pub selected_item_index: usize
 }
 
 pub struct Header {}
@@ -22,11 +20,6 @@ impl Header {
     }
 
     fn get_header(data: HeaderData) -> String {
-        format!(
-            "{} | frame: {} | index: {}",
-            data.title,
-            data.frame,
-            data.selected_item_index
-        )
+        format!("{}", data.title)
     }
 }

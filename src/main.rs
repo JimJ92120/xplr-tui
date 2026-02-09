@@ -28,7 +28,6 @@ fn main() -> Result<()> {
 
     let state = ClientState {
         is_running: false,
-        frame: 0,
     };
     let data = ClientData {
         directory_name: root_directory_name.clone(),

@@ -40,7 +40,6 @@ pub struct ViewModel {
 
 pub struct ClientState {
     pub is_running: bool,
-    pub frame: usize,
 }
 
 pub struct ClientData {
@@ -71,8 +70,6 @@ impl Client {
             self.state.is_running = true;
 
             while self.state.is_running {
-                self.state.frame += 1;
-
                 terminal.draw(|frame| self.render(frame))?;
 
                 (self.event_callback)(&mut self.state, &mut self.data)?;
@@ -95,8 +92,6 @@ impl Client {
         ViewModel {
             header: HeaderData {
                 title: String::from("XPLR"),
-                frame: self.state.frame,
-                selected_item_index: self.data.selected_item_index
             },
             content: ContentData {
                 directory_name: self.data.directory_name.clone(),
