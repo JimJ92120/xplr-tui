@@ -5,7 +5,7 @@ use ratatui::{
         Layout,
         Rect
     },
-    text::{Line},
+    text::{ Line },
     widgets::{
         Widget,
         Block,
@@ -13,7 +13,9 @@ use ratatui::{
     },
 };
 
-use super::super::components::list::{List, ListData};
+use super::super::components::{
+    list::{ List, ListData }
+};
 
 #[derive(Clone)]
 pub struct ContentData {

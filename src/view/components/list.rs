@@ -1,11 +1,11 @@
 use ratatui::{
     buffer::Buffer,
-    layout::{Rect},
+    layout::{ Rect },
     widgets::{
         Widget,
         Paragraph,
     },
-    text::{Line},
+    text::{ Line },
     style::{
         Color,
         Stylize

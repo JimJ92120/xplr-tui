@@ -1,6 +1,6 @@
 use std::{
     env,
-    io::{Result},
+    io::{ Result },
     thread::sleep,
     time::Duration
 };

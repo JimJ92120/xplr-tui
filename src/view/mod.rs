@@ -1,10 +1,9 @@
-use std::io::{Result};
-
+use std::io::{ Result };
 use ratatui::{
     DefaultTerminal,
     Frame,
     buffer::Buffer,
-    widgets::{Widget},
+    widgets::{ Widget },
     layout::{
         Constraint,
         Layout,

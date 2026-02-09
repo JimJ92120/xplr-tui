@@ -1,11 +1,11 @@
 use std::{
     env,
     fs,
-    io::{Result},
-    path::{Path}
+    io::{ Result },
+    path::{ Path }
 };
 
-pub type DirectoryContent = Vec<(String, String)>;
+type DirectoryContent = Vec<(String, String)>;
 
 pub struct Api {}
 
