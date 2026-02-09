@@ -57,7 +57,8 @@ fn event_callback(state: &mut ClientState, data: &mut ClientData) -> Result<()> 
     if let Event::Key(key) = event::read()? {
         if KeyEventKind::Press == key.kind {
             match key.code {
-                KeyCode::Esc => { state.is_running = false}
+                KeyCode::Esc => { state.is_running = false },
+
                 KeyCode::Up => {
                     if data.selected_item_index > 0 {
                         data.selected_item_index -= 1;
@@ -68,6 +69,7 @@ fn event_callback(state: &mut ClientState, data: &mut ClientData) -> Result<()> 
                         data.selected_item_index +=1;
                     }
                 },
+
                 KeyCode::Right => {
                     let selected_item = data.directory_content[data.selected_item_index].clone();
 
@@ -112,7 +114,9 @@ fn event_callback(state: &mut ClientState, data: &mut ClientData) -> Result<()> 
                         )
                     };       
                 }
+
                 KeyCode::Char(char) => { data.text_input.push(char) },
+            
                 _ => {}
             };
         } 
