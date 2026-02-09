@@ -74,7 +74,7 @@ impl Client {
     fn get_view_data(&self) -> ViewModel {
         ViewModel {
             header: HeaderData {
-                title: "XPLR".to_string(),
+                title: String::from("XPLR"),
                 frame: self.state.frame,
                 selected_item_index: self.data.selected_item_index
             },

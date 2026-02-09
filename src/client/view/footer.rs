@@ -1,7 +1,10 @@
 use ratatui::{
     buffer::Buffer,
-    layout::{ Rect},
-    widgets::{Widget, Paragraph}
+    layout::{Rect},
+    widgets::{
+        Widget,
+        Paragraph
+    }
 };
 
 pub struct FooterData {

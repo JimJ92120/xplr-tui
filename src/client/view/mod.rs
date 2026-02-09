@@ -1,6 +1,10 @@
 use ratatui::{
     buffer::Buffer,
-    layout::{Constraint, Layout, Rect},
+    layout::{
+        Constraint,
+        Layout,
+        Rect
+    },
 };
 
 mod components;
@@ -8,9 +12,18 @@ pub mod header;
 pub mod content;
 pub mod footer;
 
-use header::{Header, HeaderData};
-use content::{Content, ContentData};
-use footer::{Footer, FooterData};
+use header::{
+    Header,
+    HeaderData
+};
+use content::{
+    Content,
+    ContentData
+};
+use footer::{
+    Footer,
+    FooterData
+};
 
 pub struct ViewModel {
     pub header: HeaderData,
