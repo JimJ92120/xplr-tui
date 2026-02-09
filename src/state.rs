@@ -72,6 +72,16 @@ impl State {
             self.selected_item_index -= 1;
         }
     }
+    pub fn select_first_item(&mut self) {
+        self.selected_item_index = 0;
+    }
+    pub fn select_last_item(&mut self) {
+        if !self.directory_content.is_empty() {
+            self.selected_item_index = self.directory_content.len() - 1;
+        } else {
+            self.selected_item_index = 0;
+        }
+    }
 
     pub fn load_next_directory(&mut self) {
         let State {

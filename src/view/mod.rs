@@ -111,6 +111,8 @@ impl View {
 
                     KeyCode::Up => state.select_previous_item(),
                     KeyCode::Down => state.select_next_item(),
+                    KeyCode::PageUp => state.select_first_item(),
+                    KeyCode::PageDown => state.select_last_item(),
 
                     KeyCode::Right => state.load_next_directory(),
                     KeyCode::Left => state.load_previous_directory(),
