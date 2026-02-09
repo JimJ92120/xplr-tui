@@ -65,15 +65,26 @@ impl Content {
     }
 
     fn render_right_container(area: Rect, buffer: &mut Buffer, data: ContentData) {
-        let [details_container, preview_container] = Layout::vertical([
-            Constraint::Length(3),
-            Constraint::Fill(1),
-        ]).areas(area);
+        match data.selected_item.clone() {
+            Some(selected_item) => {
+                let [details_container, preview_container] = Layout::vertical([
+                    Constraint::Length(3),
+                    Constraint::Fill(1),
+                ]).areas(area);
 
-        Paragraph::new(Self::get_details(data.clone()))
-            .render(details_container, buffer);
-        Paragraph::new(Self::get_preview(data.clone()))
-            .render(preview_container, buffer);
+                Paragraph::new(Self::get_details(data.clone()))
+                    .render(details_container, buffer);
+
+                if "file" == selected_item.1 {
+                    Paragraph::new(Self::get_preview(data.clone()))
+                        .render(preview_container, buffer);
+                }
+            },
+            None => {
+                Paragraph::new("No item selected")
+                    .render(area, buffer);
+            }
+        }
     }
 
     fn get_directory_list(data: ContentData) -> String {
