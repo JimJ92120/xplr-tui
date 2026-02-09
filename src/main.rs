@@ -4,12 +4,6 @@ use std::{
     thread::sleep,
     time::Duration
 };
-use crossterm::event::{
-    self,
-    Event,
-    KeyCode,
-    KeyEventKind
-};
 
 mod api;
 mod view;
@@ -42,10 +36,7 @@ fn main() -> Result<()> {
         parent_directory_list: Vec::new(),
         text_input: String::new()
     };
-    let mut view = View::new(
-        state,
-        event_callback
-    );
+    let mut view = View::new(state);
 
     println!("Starting...");
     sleep(Duration::from_secs(1));
@@ -53,28 +44,6 @@ fn main() -> Result<()> {
     view.run()?;
 
     println!("Done!");
-
-    Ok(())
-}
-
-fn event_callback(state: &mut State) -> Result<()> {
-    if let Event::Key(key) = event::read()? {
-        if KeyEventKind::Press == key.kind {
-            match key.code {
-                KeyCode::Esc => Controller::stop(state),
-
-                KeyCode::Up => Controller::select_previous_item(state),
-                KeyCode::Down => Controller::select_next_item(state),
-
-                KeyCode::Right => Controller::load_next_directory(state),
-                KeyCode::Left => Controller::load_previous_directory(state),
-
-                KeyCode::Char(char) => Controller::type_text(state, char),
-            
-                _ => {}
-            };
-        } 
-    };
 
     Ok(())
 }

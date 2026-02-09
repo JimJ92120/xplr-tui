@@ -10,27 +10,33 @@ use ratatui::{
         Layout,
         Rect
     },
+    crossterm::event::{
+        self,
+        Event,
+        KeyCode,
+        KeyEventKind
+    }
 };
+
+use crate::Controller;
 
 mod components;
-mod header;
-mod content;
-mod footer;
+mod layout;
 
-use header::{
-    Header,
-    HeaderData
+use layout::{
+    header::{
+        Header,
+        HeaderData
+    },
+    content::{
+        Content,
+        ContentData
+    },
+    footer::{
+        Footer,
+        FooterData
+    }
 };
-use content::{
-    Content,
-    ContentData
-};
-use footer::{
-    Footer,
-    FooterData
-};
-
-type EventCallback = fn(state: &mut State) -> Result<()>;
 
 pub struct ViewModel {
     pub header: HeaderData,
@@ -51,14 +57,12 @@ pub struct State {
 
 pub struct View {
     state: State,
-    event_callback: EventCallback
 }
 
 impl View {
-    pub fn new(state: State, event_callback: EventCallback) -> Self {
+    pub fn new(state: State) -> Self {
         Self {
-            state,
-            event_callback
+            state
         }
     }
 
@@ -69,7 +73,7 @@ impl View {
             while self.state.is_running {
                 terminal.draw(|frame| self.render(frame))?;
 
-                (self.event_callback)(&mut self.state)?;
+                self.event_callback()?;
             };
 
             Ok(())
@@ -110,6 +114,28 @@ impl View {
                 text_input,
             }
         }
+    }
+
+    fn event_callback(&mut self) -> Result<()> {
+        if let Event::Key(key) = event::read()? {
+            if KeyEventKind::Press == key.kind {
+                match key.code {
+                    KeyCode::Esc => Controller::stop(&mut self.state),
+
+                    KeyCode::Up => Controller::select_previous_item(&mut self.state),
+                    KeyCode::Down => Controller::select_next_item(&mut self.state),
+
+                    KeyCode::Right => Controller::load_next_directory(&mut self.state),
+                    KeyCode::Left => Controller::load_previous_directory(&mut self.state),
+
+                    KeyCode::Char(char) => Controller::type_text(&mut self.state, char),
+                
+                    _ => {}
+                };
+            } 
+        };
+
+        Ok(())
     }
 }
 

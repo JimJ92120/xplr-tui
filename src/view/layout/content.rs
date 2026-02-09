@@ -13,7 +13,7 @@ use ratatui::{
     },
 };
 
-use super::components::list::{List, ListData};
+use super::super::components::list::{List, ListData};
 
 #[derive(Clone)]
 pub struct ContentData {
