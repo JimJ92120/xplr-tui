@@ -13,9 +13,11 @@ use crossterm::event::{
 
 mod api;
 mod client;
+mod controller;
 
 use api::Api;
 use client::{Client, ClientState};
+use controller::Controller;
 
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
@@ -59,65 +61,15 @@ fn event_callback(state: &mut ClientState) -> Result<()> {
     if let Event::Key(key) = event::read()? {
         if KeyEventKind::Press == key.kind {
             match key.code {
-                KeyCode::Esc => { state.is_running = false },
+                KeyCode::Esc => Controller::stop(state),
 
-                KeyCode::Up => {
-                    if state.selected_item_index > 0 {
-                        state.selected_item_index -= 1;
-                    }
-                },
-                KeyCode::Down => {
-                    if state.selected_item_index < state.directory_content.len() - 1 {
-                        state.selected_item_index +=1;
-                    }
-                },
+                KeyCode::Up => Controller::select_previous_item(state),
+                KeyCode::Down => Controller::select_next_item(state),
 
-                KeyCode::Right => {
-                    let selected_item = state.directory_content[state.selected_item_index].clone();
+                KeyCode::Right => Controller::load_next_directory(state),
+                KeyCode::Left => Controller::load_previous_directory(state),
 
-                    if "directory" == selected_item.1 {
-                        let directory_name = selected_item.0.clone();
-                        let directory_content = Api::get_directory_content(directory_name.clone());
-
-                        match directory_content {
-                            Ok(directory_content) => {
-                                state.parent_directory_list.push(state.directory_name.clone());
-                                state.directory_name = directory_name;
-                                state.directory_content = directory_content;
-                                state.selected_item_index = 0;
-                            },
-                            Err(error) => panic!("Unable to retrieve content for '{}' directory.\n{}", directory_name, error)
-                        };
-                    }
-                },
-                KeyCode::Left => {
-                    if state.parent_directory_list.is_empty() {
-                        return Ok(());
-                    }
-
-                    let current_directory_name = state.directory_name.clone();
-                    let previous_directory_name = state.parent_directory_list.last().unwrap().to_string();
-                    let previous_directory_content = Api::get_directory_content(previous_directory_name.clone());
-
-                    match previous_directory_content {
-                        Ok(directory_content) => {
-                            state.parent_directory_list.pop();
-                            state.directory_name = previous_directory_name.clone();
-                            state.directory_content = directory_content.clone();
-                            state.selected_item_index = directory_content
-                                    .iter()
-                                    .position(|directory_name| current_directory_name == directory_name.0)
-                                    .unwrap();
-                        },
-                        Err(error) => panic!(
-                            "Unable to retrieve previous directory content for '{}' directory.\n{}",
-                            previous_directory_name,
-                            error
-                        )
-                    };       
-                }
-
-                KeyCode::Char(char) => { state.text_input.push(char) },
+                KeyCode::Char(char) => Controller::type_text(state, char),
             
                 _ => {}
             };
