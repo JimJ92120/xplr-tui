@@ -20,22 +20,16 @@ fn main() -> Result<()> {
         panic!("Too many arguments.\nTry '$xplr' or '$xplr /path/to/directory'.");
     }
 
-    let mut path_name = String::new();
-    if 2 == args.len() {
-        path_name = args[1].clone();
-    }
+    let path_name = if 2 == args.len() {
+         args[1].clone()
+    } else {
+        String::new()
+    };
 
-    let root_directory_name = Api::get_root_directory_name(path_name)?;
-
-    let state = State::new(State {
-        is_running: false,
-        title: String::from("XPLR"),
-        directory_name: root_directory_name.clone(),
-        directory_content: Api::get_directory_content(root_directory_name)?,
-        selected_item_index: 0,
-        parent_directory_list: Vec::new(),
-        text_input: String::new()
-    });
+    let state = State::new(
+        String::from("XPLR"),
+        path_name.to_string()
+    );
     let mut view = View::new(state);
 
     println!("Starting...");

@@ -55,9 +55,9 @@ impl View {
 
     pub fn run(&mut self) -> Result<()> {
         ratatui::run(|terminal: &mut DefaultTerminal| -> Result<()> {
-            self.state.is_running = true;
+            self.state.start();
 
-            while self.state.is_running {
+            while self.state.is_running() {
                 terminal.draw(|frame| self.render(frame))?;
 
                 self.event_callback()?;
@@ -77,28 +77,23 @@ impl View {
     }
 
     fn get_view_data(&self) -> ViewModel {
-        let State {
-            title,
-            directory_name,
-            directory_content,
-            selected_item_index,
-            parent_directory_list,
-            text_input,
+        let View {
+            state,
             ..
-        } = self.state.clone();
+        } = self;
 
         ViewModel {
             header: HeaderData {
-                title,
+                title: state.title(),
             },
             content: ContentData {
-                directory_name,
-                directory_content,
-                selected_item_index,
-                parent_directory_list
+                directory_name: state.directory_name(),
+                directory_content: state.directory_content(),
+                selected_item_index: state.selected_item_index(),
+                parent_directory_list: state.parent_directory_list()
             },
             footer: FooterData {
-                text_input,
+                text_input: state.text_input(),
             }
         }
     }

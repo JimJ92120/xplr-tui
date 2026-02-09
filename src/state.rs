@@ -2,18 +2,56 @@ use crate::Api;
 
 #[derive(Clone)]
 pub struct State {
-    pub is_running: bool,
-    pub title: String,
-    pub directory_name: String,
-    pub directory_content: Vec<(String, String)>,
-    pub selected_item_index: usize,
-    pub parent_directory_list: Vec<String>,
-    pub text_input: String
+    is_running: bool,
+    title: String,
+    directory_name: String,
+    directory_content: Vec<(String, String)>,
+    selected_item_index: usize,
+    parent_directory_list: Vec<String>,
+    text_input: String
 }
 
 impl State {
-    pub fn new(state: State) -> Self {
-        Self { ..state }
+    pub fn new(
+        title: String,
+        path_name: String,
+    ) -> Self {
+        let directory_name = Api::get_root_directory_name(path_name.clone())
+            .expect(&format!("Unable to initialize State with '{}' path name", path_name));
+        let directory_content = Api::get_directory_content(directory_name.clone())
+            .expect(&format!("Unable to initialize State with '{}' directory name", directory_name));
+
+        Self {
+            is_running: false,
+            title,
+            directory_content,
+            directory_name,
+            selected_item_index: 0,
+            parent_directory_list: Vec::new(),
+            text_input: String::new()
+        }
+    }
+
+    pub fn is_running(&self) -> bool {
+        self.is_running.clone()
+    }
+    pub fn title(&self) -> String {
+        self.title.clone()
+    }
+    pub fn directory_name(&self) -> String {
+        self.directory_name.clone()
+    }
+    pub fn directory_content(&self) -> Vec<(String, String)> {
+        self.directory_content.clone()
+    }
+    pub fn selected_item_index(&self) -> usize {
+        self.selected_item_index.clone()
+    }
+    pub fn parent_directory_list(&self) -> Vec<String> {
+        self.parent_directory_list.clone()
+    }
+    pub fn text_input(&self) -> String {
+        self.text_input.clone()
     }
 
     pub fn start(&mut self) {
