@@ -5,19 +5,38 @@ use ratatui::{
     Frame,
     buffer::Buffer,
     widgets::{Widget},
-    layout::{Rect}
+    layout::{
+        Constraint,
+        Layout,
+        Rect
+    },
 };
 
-mod view;
-use view::{
-    View,
-    ViewModel,
-    header::{HeaderData},
-    content::{ContentData},
-    footer::{FooterData}
+mod components;
+mod header;
+mod content;
+mod footer;
+
+use header::{
+    Header,
+    HeaderData
+};
+use content::{
+    Content,
+    ContentData
+};
+use footer::{
+    Footer,
+    FooterData
 };
 
 type EventCallback = fn(state: &mut ClientState, data: &mut ClientData) -> Result<()>;
+
+pub struct ViewModel {
+    pub header: HeaderData,
+    pub content: ContentData,
+    pub footer: FooterData
+}
 
 pub struct ClientState {
     pub is_running: bool,
@@ -94,6 +113,15 @@ impl Client {
 
 impl Widget for &mut Client {
     fn render(self, area: Rect, buffer: &mut Buffer) {
-        View::render(area, buffer, self.get_view_data());
+        let data = self.get_view_data();
+        let [header_container, container_container, footer_container] = Layout::vertical([
+            Constraint::Length(2),
+            Constraint::Fill(1),
+            Constraint::Length(1),
+        ]).areas(area);
+
+        Header::render(header_container, buffer, data.header);
+        Content::render(container_container, buffer, data.content);
+        Footer::render(footer_container, buffer, data.footer);
     }
 }
