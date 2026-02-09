@@ -34,7 +34,7 @@ impl App {
 
     pub fn get_current_directory_content(&self) -> DirectoryContent {
         self.directory_list
-            .get(&self.current_directory_name).clone()
+            .get(&self.current_directory_name)
             .unwrap_or(&(Vec::new() as DirectoryContent))
             .clone()
     }

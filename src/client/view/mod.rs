@@ -12,14 +12,12 @@ use header::{Header, HeaderData};
 use content::{Content, ContentData};
 use footer::{Footer, FooterData};
 
-#[derive(Debug)]
 pub struct ViewModel {
     pub header: HeaderData,
     pub content: ContentData,
     pub footer: FooterData
 }
 
-#[derive(Debug)]
 pub struct View {}
 
 impl View {

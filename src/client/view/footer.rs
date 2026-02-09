@@ -4,12 +4,10 @@ use ratatui::{
     widgets::{Widget, Paragraph}
 };
 
-#[derive(Debug)]
 pub struct FooterData {
     pub text_input: String
 }
 
-#[derive(Debug)]
 pub struct Footer {}
 
 impl Footer {

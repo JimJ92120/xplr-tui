@@ -5,13 +5,11 @@ use ratatui::{
     style::{Color, Stylize}
 };
 
-#[derive(Debug)]
 pub struct ListData {
-    pub list: Vec<String>,
+    pub list: Vec<(String, String)>,
     pub selected_item_index: usize
 }
 
-#[derive(Debug)]
 pub struct ListComponent {}
 
 impl ListComponent {
@@ -26,7 +24,7 @@ impl ListComponent {
                     .enumerate()
                     .map(|(index, content)| {
                         let list_item = ListComponent::render_list_item(
-                            content.to_string(),
+                            content.0.to_string(),
                             index
                         );
 

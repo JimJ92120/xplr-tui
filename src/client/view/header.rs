@@ -4,14 +4,12 @@ use ratatui::{
     widgets::{Widget, Paragraph}
 };
 
-#[derive(Debug)]
 pub struct HeaderData {
     pub title: String,
     pub frame: usize,
     pub selected_item_index: usize
 }
 
-#[derive(Debug)]
 pub struct Header {}
 
 impl Header {

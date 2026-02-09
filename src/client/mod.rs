@@ -19,21 +19,18 @@ use view::{
 
 type EventCallback = fn(state: &mut ClientState, data: &mut ClientData) -> Result<()>;
 
-#[derive(Debug)]
 pub struct ClientState {
     pub is_running: bool,
     pub frame: usize,
 }
 
-#[derive(Debug)]
 pub struct ClientData {
     pub directory_name: String,
-    pub directory_content: Vec<String>,
+    pub directory_content: Vec<(String, String)>,
     pub selected_item_index: usize,
     pub text_input: String
 }
 
-#[derive(Debug)]
 pub struct Client {
     state: ClientState,
     data: ClientData,

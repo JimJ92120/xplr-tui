@@ -3,24 +3,33 @@ use ratatui::{
     layout::{Constraint, Layout, Rect},
     widgets::{
         Widget,
-        Block
+        Block,
+        Paragraph
     },
 };
 
 use super::components::list::{ListComponent, ListData};
 
-#[derive(Debug)]
 pub struct ContentData {
     pub directory_name: String,
-    pub directory_content: Vec<String>,
+    pub directory_content: Vec<(String, String)>,
     pub selected_item_index: usize
 }
 
-#[derive(Debug)]
 pub struct Content {}
 
 impl Content {
     pub fn render(area: Rect, buffer: &mut Buffer, data: ContentData) {
+        let [left_container, right_container] = Layout::horizontal([
+            Constraint::Percentage(50),
+            Constraint::Percentage(50)
+        ]).areas(area);
+
+        Content::render_left_container(left_container, buffer, data);
+        Content::render_right_container(right_container, buffer);
+    }
+
+    fn render_left_container(area: Rect, buffer: &mut Buffer, data: ContentData) {
         let [title_container, list_container] = Layout::vertical([
             Constraint::Length(2),
             Constraint::Fill(1),
@@ -29,7 +38,7 @@ impl Content {
         Content::render_title(
             title_container,
             buffer,
-            format!("Reading {}", data.directory_name.clone())
+            format!("> {}", data.directory_name.clone())
         );
         Content::render_list(
             list_container,
@@ -39,6 +48,11 @@ impl Content {
                 selected_item_index: data.selected_item_index
             }
         );
+    }
+
+    fn render_right_container(area: Rect, buffer: &mut Buffer) {
+        Paragraph::new("No content.")
+            .render(area, buffer);
     }
 
     fn render_title(area: Rect, buffer: &mut Buffer, title: String) {
