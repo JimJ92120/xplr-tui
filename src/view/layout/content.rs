@@ -117,18 +117,25 @@ impl Content {
             directory_content,
             ..
         } = data;
-        let mut details: Vec<Line> = vec![
-            Line::from("Item:"),
-            Line::from(format!(
-                "- name: {}",
-                directory_content[selected_item_index].0
-            )),
-            Line::from(format!(
-                "- type: {}",
-                directory_content[selected_item_index].1
-            )),
-            Line::from(""),
-        ];
+
+        let mut details: Vec<Line> = if !directory_content.is_empty() {
+            vec![
+                Line::from("Item:"),
+                Line::from(format!(
+                    "- name: {}",
+                    directory_content[selected_item_index].0
+                )),
+                Line::from(format!(
+                    "- type: {}",
+                    directory_content[selected_item_index].1
+                )),
+                Line::from(""),
+            ]
+        } else {
+            vec![
+                Line::from("No content found.")
+            ]
+        };
 
         if parent_directory_list.is_empty() {
             details.push(Line::from("No parents found."));
