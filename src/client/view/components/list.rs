@@ -14,7 +14,7 @@ pub struct ListComponent {}
 
 impl ListComponent {
     pub fn render(area: Rect, buffer: &mut Buffer, data: ListData) {
-        if 0 == data.list.len() {
+        if data.list.is_empty() {
             Paragraph::new("No item found.")
                 .render(area, buffer);
         } else {

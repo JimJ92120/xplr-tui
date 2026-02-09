@@ -28,6 +28,7 @@ pub struct ClientData {
     pub directory_name: String,
     pub directory_content: Vec<(String, String)>,
     pub selected_item_index: usize,
+    pub parent_directory_list: Vec<String>,
     pub text_input: String
 }
 
@@ -81,7 +82,8 @@ impl Client {
             content: ContentData {
                 directory_name: self.data.directory_name.clone(),
                 directory_content: self.data.directory_content.clone(),
-                selected_item_index: self.data.selected_item_index
+                selected_item_index: self.data.selected_item_index,
+                parent_directory_list: self.data.parent_directory_list.clone()
             },
             footer: FooterData {
                 text_input: self.data.text_input.clone(),

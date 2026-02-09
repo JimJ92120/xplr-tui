@@ -6,11 +6,10 @@ use std::{
 };
 use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 
-mod helpers;
-mod app;
+mod api;
 mod client;
 
-use app::App;
+use api::Api;
 use client::{Client, ClientState, ClientData};
 
 fn main() -> Result<()> {
@@ -25,17 +24,17 @@ fn main() -> Result<()> {
         path_name = args[1].clone();
     }
 
-    let root_directory_name = helpers::get_root_directory_name(path_name)?;
-    let app = App::new(root_directory_name);
+    let root_directory_name = Api::get_root_directory_name(path_name)?;
 
     let state = ClientState {
         is_running: false,
         frame: 0,
     };
     let data = ClientData {
-        directory_name: app.get_current_directory_name(),
-        directory_content: app.get_current_directory_content(),
+        directory_name: root_directory_name.clone(),
+        directory_content: Api::get_directory_content(root_directory_name)?,
         selected_item_index: 0,
+        parent_directory_list: Vec::new(),
         text_input: String::new()
     };
     let mut client = Client::new(
@@ -69,6 +68,46 @@ fn event_callback(state: &mut ClientState, data: &mut ClientData) -> Result<()> 
                         data.selected_item_index +=1;
                     }
                 },
+                KeyCode::Right => {
+                    let selected_item = data.directory_content[data.selected_item_index].clone();
+
+                    if "directory" == selected_item.1 {
+                        let directory_name = selected_item.0.clone();
+                        let directory_content = Api::get_directory_content(directory_name.clone());
+
+                        match directory_content {
+                            Ok(directory_content) => {
+                                data.parent_directory_list.push(data.directory_name.clone());
+                                data.directory_name = directory_name;
+                                data.directory_content = directory_content;
+                                data.selected_item_index = 0;
+                            },
+                            Err(error) => panic!("Unable to retrieve content for '{}' directory.\n{}", directory_name, error)
+                        };
+                    }
+                },
+                KeyCode::Left => {
+                    if data.parent_directory_list.is_empty() {
+                        return Ok(());
+                    }
+
+                    let previous_directory_name = data.parent_directory_list.last().unwrap().to_string();
+                    let previous_directory_content = Api::get_directory_content(previous_directory_name.clone());
+
+                    match previous_directory_content {
+                        Ok(directory_content) => {
+                            data.parent_directory_list.pop();
+                            data.directory_name = previous_directory_name;
+                            data.directory_content = directory_content;
+                            data.selected_item_index = 0;
+                        },
+                        Err(error) => panic!(
+                            "Unable to retrieve previous directory content for '{}' directory.\n{}",
+                            previous_directory_name,
+                            error
+                        )
+                    };       
+                }
                 KeyCode::Char(char) => { data.text_input.push(char) },
                 _ => {}
             };
