@@ -18,11 +18,10 @@ use ratatui::{
     }
 };
 
-use crate::Controller;
-
 mod components;
 mod layout;
 
+use crate::{ Controller, State };
 use layout::{
     header::{
         Header,
@@ -38,21 +37,10 @@ use layout::{
     }
 };
 
-pub struct ViewModel {
+struct ViewModel {
     pub header: HeaderData,
     pub content: ContentData,
     pub footer: FooterData
-}
-
-#[derive(Clone)]
-pub struct State {
-    pub is_running: bool,
-    pub title: String,
-    pub directory_name: String,
-    pub directory_content: Vec<(String, String)>,
-    pub selected_item_index: usize,
-    pub parent_directory_list: Vec<String>,
-    pub text_input: String
 }
 
 pub struct View {

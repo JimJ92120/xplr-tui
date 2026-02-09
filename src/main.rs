@@ -10,8 +10,8 @@ mod view;
 mod controller;
 
 use api::Api;
-use view::{View, State};
-use controller::Controller;
+use view::View;
+use controller::{ Controller, State };
 
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
