@@ -91,15 +91,19 @@ fn event_callback(state: &mut ClientState, data: &mut ClientData) -> Result<()> 
                         return Ok(());
                     }
 
+                    let current_directory_name = data.directory_name.clone();
                     let previous_directory_name = data.parent_directory_list.last().unwrap().to_string();
                     let previous_directory_content = Api::get_directory_content(previous_directory_name.clone());
 
                     match previous_directory_content {
                         Ok(directory_content) => {
                             data.parent_directory_list.pop();
-                            data.directory_name = previous_directory_name;
-                            data.directory_content = directory_content;
-                            data.selected_item_index = 0;
+                            data.directory_name = previous_directory_name.clone();
+                            data.directory_content = directory_content.clone();
+                            data.selected_item_index = directory_content
+                                    .iter()
+                                    .position(|directory_name| current_directory_name == directory_name.0)
+                                    .unwrap();
                         },
                         Err(error) => panic!(
                             "Unable to retrieve previous directory content for '{}' directory.\n{}",
