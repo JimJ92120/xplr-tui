@@ -121,7 +121,7 @@ impl Content {
             let selected_item = selected_item.unwrap();
 
             vec![
-                Line::from("Item:"),
+                Line::from("Details:"),
                 Line::from(format!(
                     "- name: {}",
                     selected_item.0
