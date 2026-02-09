@@ -33,6 +33,7 @@ fn main() -> Result<()> {
 
     let state = ClientState {
         is_running: false,
+        title: String::from("XPLR"),
         directory_name: root_directory_name.clone(),
         directory_content: Api::get_directory_content(root_directory_name)?,
         selected_item_index: 0,
@@ -44,7 +45,7 @@ fn main() -> Result<()> {
         event_callback
     );
 
-    println!("Starting XPLR...");
+    println!("Starting...");
     sleep(Duration::from_secs(1));
 
     client.run()?;
