@@ -34,7 +34,11 @@ impl List {
     }
 
     fn render_list(area: Rect, buffer: &mut Buffer, data: ListData) {
-        let selected_item_index = data.selected_item_index as u16;
+        let ListData {
+            selected_item_index,
+            list
+        } = data;
+        let selected_item_index = selected_item_index as u16;
         let scroll = if selected_item_index < area.height {
             0
         } else {
@@ -42,7 +46,7 @@ impl List {
         };
 
         Paragraph::new(
-            data.list
+            list
                 .iter()
                 .enumerate()
                 .map(|(index, item)| {

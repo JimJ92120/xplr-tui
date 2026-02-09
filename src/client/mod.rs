@@ -38,8 +38,10 @@ pub struct ViewModel {
     pub footer: FooterData
 }
 
+#[derive(Clone)]
 pub struct ClientState {
     pub is_running: bool,
+    pub title: String,
     pub directory_name: String,
     pub directory_content: Vec<(String, String)>,
     pub selected_item_index: usize,
@@ -84,18 +86,28 @@ impl Client {
     }
 
     fn get_view_data(&self) -> ViewModel {
+        let ClientState {
+            title,
+            directory_name,
+            directory_content,
+            selected_item_index,
+            parent_directory_list,
+            text_input,
+            ..
+        } = self.state.clone();
+
         ViewModel {
             header: HeaderData {
-                title: String::from("XPLR"),
+                title,
             },
             content: ContentData {
-                directory_name: self.state.directory_name.clone(),
-                directory_content: self.state.directory_content.clone(),
-                selected_item_index: self.state.selected_item_index,
-                parent_directory_list: self.state.parent_directory_list.clone()
+                directory_name,
+                directory_content,
+                selected_item_index,
+                parent_directory_list
             },
             footer: FooterData {
-                text_input: self.state.text_input.clone(),
+                text_input,
             }
         }
     }
@@ -103,15 +115,15 @@ impl Client {
 
 impl Widget for &mut Client {
     fn render(self, area: Rect, buffer: &mut Buffer) {
-        let data = self.get_view_data();
         let [header_container, container_container, footer_container] = Layout::vertical([
             Constraint::Length(2),
             Constraint::Fill(1),
             Constraint::Length(1),
         ]).areas(area);
 
-        Header::render(header_container, buffer, data.header);
-        Content::render(container_container, buffer, data.content);
-        Footer::render(footer_container, buffer, data.footer);
+        let ViewModel { header, content, footer } = self.get_view_data();
+        Header::render(header_container, buffer, header);
+        Content::render(container_container, buffer, content);
+        Footer::render(footer_container, buffer, footer);
     }
 }

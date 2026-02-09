@@ -42,6 +42,11 @@ impl Content {
             Constraint::Fill(1),
         ]).areas(area);
 
+        let ContentData {
+            directory_content,
+            selected_item_index,
+            ..
+        } = data.clone();
         Block::new()
             .title(Self::get_directory_list(data.clone()))
             .render(title_container, buffer);
@@ -49,8 +54,8 @@ impl Content {
             list_container,
             buffer,
             ListData {
-                list: data.directory_content.clone(),
-                selected_item_index: data.selected_item_index
+                list: directory_content,
+                selected_item_index
             }
         );
     }
@@ -69,11 +74,17 @@ impl Content {
     }
 
     fn get_directory_list(data: ContentData) -> String {
-        if data.parent_directory_list.is_empty() {
-            data.directory_name.clone()
+        let ContentData {
+            directory_name,
+            parent_directory_list,
+            ..
+        } = data;
+
+        if parent_directory_list.is_empty() {
+            directory_name
         } else {
-            let mut directory_list = data.parent_directory_list.clone();
-            directory_list.push(data.directory_name.clone());
+            let mut directory_list = parent_directory_list;
+            directory_list.push(directory_name);
 
             directory_list
                 .iter()
@@ -98,23 +109,29 @@ impl Content {
     }
 
     fn get_details(data: ContentData) -> Vec<Line<'static>> {
+        let ContentData {
+            selected_item_index,
+            parent_directory_list,
+            directory_content,
+            ..
+        } = data;
         let mut details: Vec<Line> = vec![
             Line::from("Item:"),
             Line::from(format!(
                 "- name: {}",
-                data.directory_content[data.selected_item_index].0
+                directory_content[selected_item_index].0
             )),
             Line::from(format!(
                 "- type: {}",
-                data.directory_content[data.selected_item_index].1
+                directory_content[selected_item_index].1
             )),
             Line::from(""),
         ];
 
-        if data.parent_directory_list.is_empty() {
+        if parent_directory_list.is_empty() {
             details.push(Line::from("No parents found."));
         } else {
-            data.parent_directory_list
+            parent_directory_list
                 .iter()
                 .for_each(|item| {
                     details.push(Line::from(
