@@ -57,6 +57,16 @@ impl Api {
         Ok(result)
     }
 
+    pub fn get_file_content(file_name: String) -> Result<String> {
+        let file_path = Path::new(&file_name);
+
+        if !file_path.is_file() {
+            panic!("'{}' is not a file.", file_name);
+        }
+
+        fs::read_to_string(file_path)
+    }
+
     fn get_content_type(path: &Path) -> Result<String> {
         if path.is_dir() {
             return Ok(String::from("directory"));

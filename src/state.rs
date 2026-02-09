@@ -181,15 +181,15 @@ impl State {
     fn load_preview(&mut self) {
         let selected_item = self.selected_item();
 
-        match selected_item {
-            Some(item) => {
-                self.preview = format!(
-                    "- name: {}\n- type: {}",
-                    item.0,
-                    item.1
-                )
+        if selected_item.is_none() {
+            return;
+        }
+
+        match Api::get_file_content(selected_item.unwrap().0) {
+            Ok(content) => {
+                self.preview = content;
             },
-            None => ()
+            Err(_) => ()
         }
     }
 }
