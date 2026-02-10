@@ -1,11 +1,15 @@
+use crate::types::{
+    DirectoryItemType,
+    DirectoryItem,
+    Directory,
+};
 use crate::Api;
 
 #[derive(Clone)]
 pub struct State {
     is_running: bool,
     title: String,
-    directory_name: String,
-    directory_content: Vec<(String, String)>,
+    directory: Directory,
     selected_item_index: usize,
     parent_directory_list: Vec<String>,
     text_input: String,
@@ -17,18 +21,15 @@ impl State {
         title: String,
         path_name: String,
     ) -> Self {
-        let directory_name = Api::get_root_directory_name(path_name.clone())
+        let directory_path_name = Api::get_root_directory_path_name(path_name.clone())
             .expect(&format!("Unable to initialize State with '{}' path name", path_name));
-        let directory_content = Api::get_directory_content(directory_name.clone())
-            .expect(&format!("Unable to initialize State with '{}' directory name", directory_name));
-
-        
+        let directory = Api::get_directory(directory_path_name.clone())
+            .expect(&format!("Unable to initialize State with '{}' directory name", directory_path_name));
 
         let mut state = Self {
             is_running: false,
             title,
-            directory_content,
-            directory_name,
+            directory,
             selected_item_index: 0,
             parent_directory_list: Vec::new(),
             text_input: String::new(),
@@ -45,11 +46,8 @@ impl State {
     pub fn title(&self) -> String {
         self.title.clone()
     }
-    pub fn directory_name(&self) -> String {
-        self.directory_name.clone()
-    }
-    pub fn directory_content(&self) -> Vec<(String, String)> {
-        self.directory_content.clone()
+    pub fn directory(&self) -> Directory {
+        self.directory.clone()
     }
     pub fn selected_item_index(&self) -> usize {
         self.selected_item_index.clone()
@@ -63,18 +61,18 @@ impl State {
     pub fn preview(&self) -> String {
         self.preview.clone()
     }
-    pub fn selected_item(&self) -> Option<(String, String)> {
+    pub fn selected_item(&self) -> Option<DirectoryItem> {
         let State {
-            directory_content,
+            directory,
             selected_item_index,
             ..
         } = self;
 
-        if directory_content.is_empty() {
+        if directory.content.is_empty() {
             return None;
         }
 
-        Some(directory_content[*selected_item_index].clone())
+        Some(directory.content[*selected_item_index].clone())
     }
 
     pub fn start(&mut self) {
@@ -86,7 +84,7 @@ impl State {
     }
 
     pub fn select_next_item(&mut self) {
-        if self.selected_item_index < self.directory_content.len() - 1 {
+        if self.selected_item_index < self.directory.content.len() - 1 {
             self.update_selected_item_index(self.selected_item_index + 1);
         }
     }
@@ -99,8 +97,8 @@ impl State {
         self.update_selected_item_index(0);
     }
     pub fn select_last_item(&mut self) {
-        if !self.directory_content.is_empty() {
-            self.update_selected_item_index(self.directory_content.len() - 1);
+        if !self.directory.content.is_empty() {
+            self.update_selected_item_index(self.directory.content.len() - 1);
         } else {
             self.selected_item_index = 0;
         }
@@ -108,29 +106,29 @@ impl State {
 
     pub fn load_next_directory(&mut self) {
         let State {
-            directory_name,
+            directory,
             ..
         } = self.clone();
         let selected_item = self.selected_item().unwrap();
 
-        if "directory" == selected_item.1 {
-            let next_directory_name = selected_item.0.clone();
-            let next_directory_content = Api::get_directory_content(next_directory_name.to_string());
+        if DirectoryItemType::Directory == selected_item.item_type {
+            let current_directory_path_name = directory.path_name.clone();
+            let next_directory_path_name = selected_item.path_name.clone();
+            let next_directory = Api::get_directory(next_directory_path_name.clone());
 
-            match next_directory_content {
-                Ok(directory_content) => {
-                    self.parent_directory_list.push(directory_name);
-                    self.directory_name = next_directory_name;
-                    self.directory_content = directory_content;
+            match next_directory {
+                Ok(next_directory) => {
+                    self.parent_directory_list.push(current_directory_path_name);
+                    self.directory = next_directory.clone();
                     self.selected_item_index = 0;
                 },
-                Err(error) => panic!("Unable to retrieve content for '{}' directory.\n{}", next_directory_name, error)
+                Err(error) => panic!("Unable to retrieve content for '{}' directory.\n{}", next_directory_path_name, error)
             };
         } 
     }
     pub fn load_previous_directory(&mut self) {
         let State {
-            directory_name,
+            directory,
             parent_directory_list,
             ..
         } = self.clone();
@@ -139,23 +137,22 @@ impl State {
             return;
         }
 
-        let current_directory_name = directory_name;
-        let previous_directory_name = parent_directory_list.last().unwrap().to_string();
-        let previous_directory_content = Api::get_directory_content(previous_directory_name.to_string());
+        let current_directory_path_name = directory.path_name;
+        let previous_directory_path_name = parent_directory_list.last().unwrap().clone();
+        let previous_directory = Api::get_directory(previous_directory_path_name.clone());
 
-        match previous_directory_content {
-            Ok(directory_content) => {
+        match previous_directory {
+            Ok(previous_directory) => {
                 self.parent_directory_list.pop();
-                self.directory_name = previous_directory_name;
-                self.directory_content = directory_content.clone();
-                self.selected_item_index = directory_content
+                self.directory = previous_directory.clone();
+                self.selected_item_index = previous_directory.content
                         .iter()
-                        .position(|directory_name| current_directory_name == directory_name.0)
+                        .position(|item| current_directory_path_name == item.path_name)
                         .unwrap();
             },
             Err(error) => panic!(
                 "Unable to retrieve previous directory content for '{}' directory.\n{}",
-                previous_directory_name,
+                previous_directory_path_name,
                 error
             )
         };
@@ -177,7 +174,7 @@ impl State {
 
         match self.selected_item() {
             Some(item) => {
-                if "file" == item.1 {
+                if DirectoryItemType::File == item.item_type {
                     self.load_preview();
                 }
             },
@@ -196,9 +193,9 @@ impl State {
         }
 
         let selected_item = selected_item.unwrap();
-        if "file" == selected_item.1 {
-            self.preview = Api::get_file_content(selected_item.0.clone()).expect(
-                &format!("'{}' is not a file.", selected_item.0)
+        if DirectoryItemType::File == selected_item.item_type {
+            self.preview = Api::get_file_content(selected_item.path_name.clone()).expect(
+                &format!("'{}' is not a file.", selected_item.path_name)
             );
         }
     }

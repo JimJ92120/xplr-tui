@@ -5,6 +5,7 @@ use std::{
     time::Duration
 };
 
+mod types;
 mod api;
 mod view;
 mod state;

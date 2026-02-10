@@ -87,8 +87,7 @@ impl View {
                 title: state.title(),
             },
             content: ContentData {
-                directory_name: state.directory_name(),
-                directory_content: state.directory_content(),
+                directory: state.directory(),
                 selected_item_index: state.selected_item_index(),
                 selected_item: state.selected_item(),
                 parent_directory_list: state.parent_directory_list(),

@@ -12,8 +12,12 @@ use ratatui::{
     }
 };
 
+use crate::types::{
+    Directory,
+};
+
 pub struct ListData {
-    pub list: Vec<(String, String)>,
+    pub list: Directory,
     pub selected_item_index: usize,
 }
 
@@ -23,7 +27,7 @@ pub struct List {
 
 impl Widget for List {
     fn render(self, area: Rect, buffer: &mut Buffer) {
-        if self.data.list.is_empty() {
+        if self.data.list.content.is_empty() {
             self.render_no_list(area, buffer);
         } else {
             self.render_list(area, buffer);                
@@ -55,11 +59,11 @@ impl List {
         };
 
         Paragraph::new(
-            list
+            list.content
                 .iter()
                 .enumerate()
                 .map(|(index, item)| {
-                    let line = Line::from(format!("{}.{}", index, item.0));
+                    let line = Line::from(format!("{}.{}", index, item.path_name));
 
                     if selected_item_index == index {
                         return line.bg(Color::Green);

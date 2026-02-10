@@ -5,56 +5,73 @@ use std::{
     path::{ Path }
 };
 
-type DirectoryContent = Vec<(String, String)>;
+use crate::types::{
+    DirectoryItemType,
+    DirectoryItem,
+    DirectoryContent,
+    Directory,
+};
 
 pub struct Api {}
 
 impl Api {
-    pub fn get_root_directory_name(path_name: String) -> Result<String> {
+    pub fn get_root_directory_path_name(path_name: String) -> Result<String> {
         let current_directory = env::current_dir().unwrap();
-        let mut directory_name = current_directory.display().to_string();
+        let mut directory_path_name = current_directory.display().to_string();
 
         if "" != path_name && "./" != path_name {
             if path_name.chars().nth(0).unwrap().is_alphanumeric() {
-                directory_name = format!("{}/{}", directory_name, path_name);
+                directory_path_name = format!("{}/{}", directory_path_name, path_name);
             } else if path_name.starts_with("./") {
                 let (_, split) = path_name.split_at(2);
 
-                directory_name = format!("{}/{}", directory_name, split);
+                directory_path_name = format!("{}/{}", directory_path_name, split);
             } else if path_name.starts_with("/") {
-                directory_name = path_name.clone();
+                directory_path_name = path_name.clone();
             } else {
                 panic!("'{}' path not accepted.", path_name);
             }
         }
 
-        let directory_path = Path::new(&directory_name);
+        let directory_path = Path::new(&directory_path_name);
 
         if !directory_path.is_dir() {
-            panic!("'{}' not a directory.", directory_name);
+            panic!("'{}' not a directory.", directory_path_name);
         }
 
-        Ok(directory_name)
+        Ok(directory_path_name)
     }
 
-    pub fn get_directory_content(directory_name: String) -> Result<DirectoryContent> {
-        let directory_path = Path::new(&directory_name);
+    pub fn get_directory(directory_path_name: String) -> Result<Directory> {
+        let directory_path = Path::new(&directory_path_name);
 
         if !directory_path.is_dir() {
-            panic!("'{}' not a directory.", directory_name);
+            panic!("'{}' not a directory.", directory_path_name);
         }
 
-        let result: DirectoryContent = fs::read_dir(directory_path)?
-            .map(|entry| {
-                let entry_name = entry.unwrap().path().display().to_string();
-                let content_type = Self::get_content_type(Path::new(&entry_name))
-                    .expect(&format!("Unable to fetch content type for '{}'.", entry_name));
+        Ok(Directory {
+            name: String::from("root"),
+            path_name: directory_path_name.clone(),
+            content: Self::get_directory_content(directory_path_name.clone())?,
+        })
+    }
 
-                (entry_name, content_type)
+    fn get_directory_content(directory_path_name: String) -> Result<DirectoryContent> {
+        let directory_path = Path::new(&directory_path_name);
+        let directory_content: DirectoryContent = fs::read_dir(directory_path)?
+            .map(|entry| {
+                let path_name = entry.unwrap().path().display().to_string();
+
+                DirectoryItem {
+                    name: String::from("item"),
+                    path_name: path_name.clone(),
+                    item_type: Self::get_content_type(Path::new(&path_name))
+                        .expect(&format!("Unable to fetch content type for '{}'.", path_name))
+                }
             })
             .collect();
 
-        Ok(result)
+        Ok(directory_content)
     }
 
     pub fn get_file_content(file_name: String) -> Result<String> {
@@ -67,11 +84,11 @@ impl Api {
         fs::read_to_string(file_path)
     }
 
-    fn get_content_type(path: &Path) -> Result<String> {
+    fn get_content_type(path: &Path) -> Result<DirectoryItemType> {
         if path.is_dir() {
-            return Ok(String::from("directory"));
+            return Ok(DirectoryItemType::Directory);
         } else if path.is_file() {
-            return Ok(String::from("file"));
+            return Ok(DirectoryItemType::File);
         }
 
         panic!("'{}' not found.", path.display().to_string());

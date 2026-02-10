@@ -13,16 +13,20 @@ use ratatui::{
     },
 };
 
+use crate::types::{
+    DirectoryItemType,
+    DirectoryItem,
+    Directory,
+};
 use super::super::components::{
     list::{ List, ListData }
 };
 
 #[derive(Clone)]
 pub struct ContentData {
-    pub directory_name: String,
-    pub directory_content: Vec<(String, String)>,
+    pub directory: Directory,
     pub selected_item_index: usize,
-    pub selected_item: Option<(String, String)>,
+    pub selected_item: Option<DirectoryItem>,
     pub parent_directory_list: Vec<String>,
     pub preview: String,
 }
@@ -60,7 +64,7 @@ impl Content {
             .title(self.get_directory_list())
             .render(title_container, buffer);
         List::new(ListData {
-            list: self.data.directory_content.clone(),
+            list: self.data.directory.clone(),
             selected_item_index: self.data.selected_item_index.clone(),
         })
             .render(list_container, buffer);
@@ -82,7 +86,7 @@ impl Content {
                 Paragraph::new(self.get_details())
                     .render(details_container, buffer);
 
-                if "file" == selected_item.1 {
+                if DirectoryItemType::File == selected_item.item_type {
                     Paragraph::new(self.get_preview())
                         .render(preview_container, buffer);
                 }
@@ -96,23 +100,23 @@ impl Content {
 
     fn get_directory_list(&self) -> String {
         let ContentData {
-            directory_name,
+            directory,
             parent_directory_list,
             ..
         } = self.data.clone();
 
         if parent_directory_list.is_empty() {
-            directory_name
+            return directory.path_name;
         } else {
             let mut directory_list = parent_directory_list;
-            directory_list.push(directory_name);
+            directory_list.push(directory.path_name);
 
             directory_list
                 .iter()
                 .enumerate()
-                .map(|(index, directory_name)| {
+                .map(|(index, directory_path_name)| {
                     if 0 < index {
-                        let (_, formatted_directory_name) = directory_name
+                        let (_, formatted_directory_name) = directory_path_name
                             .split_once(
                                 format!("{}/", directory_list[index - 1].clone()).as_str()
                             )
@@ -120,7 +124,7 @@ impl Content {
 
                         format!(" > {}", formatted_directory_name).to_string()
                     } else {
-                        directory_name.to_string()
+                        directory_path_name.to_string()
                     }
                 })
                 .collect::<Vec<String>>()
@@ -142,11 +146,11 @@ impl Content {
                 Line::from("Details:"),
                 Line::from(format!(
                     "- name: {}",
-                    selected_item.0
+                    selected_item.name
                 )),
                 Line::from(format!(
-                    "- type: {}",
-                    selected_item.1
+                    "- type: {:?}",
+                    selected_item.item_type
                 )),
                 Line::from(""),
             ]
