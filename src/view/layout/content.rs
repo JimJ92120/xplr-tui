@@ -13,7 +13,6 @@ use ratatui::{
 };
 
 use crate::types::{
-    DirectoryItemType,
     DirectoryItem,
     Directory,
 };
@@ -25,6 +24,10 @@ use super::super::components::{
     parent_directory_list::{
         ParentDirectoryList,
         ParentDirectoryListData,
+    },
+    directory_item_preview::{
+        DirectoryItemPreview,
+        DirectoryItemPreviewData
     }
 };
 
@@ -86,6 +89,10 @@ impl Content {
 
         match selected_item {
             Some(selected_item) => {
+                let ContentData {
+                    preview,
+                    ..
+                } = self.data.clone();
                 let [details_container, preview_container] = Layout::vertical([
                     Constraint::Length(3),
                     Constraint::Fill(1),
@@ -93,11 +100,11 @@ impl Content {
 
                 Paragraph::new(self.get_details())
                     .render(details_container, buffer);
-
-                if DirectoryItemType::File == selected_item.item_type {
-                    Paragraph::new(self.get_preview())
-                        .render(preview_container, buffer);
-                }
+                DirectoryItemPreview::new(DirectoryItemPreviewData {
+                    preview: preview.clone(),
+                    selected_item: selected_item.clone(),
+                })
+                    .render(preview_container, buffer);
             },
             None => {
                 Paragraph::new("No item selected")
@@ -134,21 +141,5 @@ impl Content {
         };
 
         details
-    }
-
-    fn get_preview(&self) -> String {
-        let ContentData {
-            selected_item,
-            preview,
-            ..
-        } = self.data.clone();
-
-        if selected_item.is_none() {
-            return String::from("\nNo item selected.");
-        } else if "" == preview {
-            return String::from("\nNo preview available.");
-        }
-
-        format!("\nPreview:\n{}", preview)
     }
 }
