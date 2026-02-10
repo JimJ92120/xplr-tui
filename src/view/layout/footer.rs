@@ -11,7 +11,19 @@ use ratatui::{
     }
 };
 
+use crate::types::{
+    Action
+};
+
+use super::super::components::{
+    action_list::{
+        ActionList,
+        ActionListData,
+    }
+};
+
 pub struct FooterData {
+    pub current_action: Option<Action>,
     pub text_input: String
 }
 
@@ -39,7 +51,9 @@ impl Footer {
     }
 
     fn render_actions_container(&self, area: Rect, buffer: &mut Buffer) {
-        Paragraph::new("1.copy | 2.move | 3.rename | 4.delete")
+        ActionList::new(ActionListData {
+            current_action: self.data.current_action.clone(),
+        })
             .render(area, buffer);
     }
 

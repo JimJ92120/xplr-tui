@@ -3,6 +3,7 @@ use crate::types::{
     DirectoryItem,
     Directory,
     DirectoryList,
+    Action,
 };
 use crate::Api;
 
@@ -15,6 +16,7 @@ pub struct State {
     parent_directory_list: DirectoryList,
     text_input: String,
     preview: String,
+    action: Option<Action>,
 }
 
 impl State {
@@ -34,7 +36,8 @@ impl State {
             selected_item_index: 0,
             parent_directory_list: Vec::new(),
             text_input: String::new(),
-            preview: String::new()
+            preview: String::new(),
+            action: None,
         };
         state.load_preview();
 
@@ -75,6 +78,9 @@ impl State {
 
         Some(directory.content[*selected_item_index].clone())
     }
+    pub fn action(&self) -> Option<Action> {
+        self.action.clone()
+    }
 
     pub fn start(&mut self) {
         self.is_running = true;
@@ -102,6 +108,19 @@ impl State {
             self.update_selected_item_index(self.directory.content.len() - 1);
         } else {
             self.selected_item_index = 0;
+        }
+    }
+
+    pub fn run_action(&mut self, action: Action) {
+        match self.action.clone() {
+            Some(current_action) => {
+                if current_action == action {
+                    self.action = None;
+                }
+            },
+            None => {
+                self.action = Some(action);
+            }
         }
     }
 

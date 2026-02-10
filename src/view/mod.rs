@@ -20,6 +20,9 @@ use ratatui::{
 mod components;
 mod layout;
 
+use crate::types::{
+    Action
+};
 use crate::{ State };
 use layout::{
     header::{
@@ -94,6 +97,7 @@ impl View {
                 preview: state.preview(),
             },
             footer: FooterData {
+                current_action: state.action(),
                 text_input: state.text_input(),
             }
         }
@@ -117,6 +121,11 @@ impl View {
 
                     KeyCode::Right => state.load_next_directory(),
                     KeyCode::Left => state.load_previous_directory(),
+
+                    KeyCode::Char('1') => state.run_action(Action::Copy),
+                    KeyCode::Char('2') => state.run_action(Action::Move),
+                    KeyCode::Char('3') => state.run_action(Action::Rename),
+                    KeyCode::Char('4') => state.run_action(Action::Delete),
 
                     KeyCode::Char(char) => state.type_text(char),
                     KeyCode::Backspace => state.delete_text_last_char(),
