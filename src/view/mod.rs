@@ -135,7 +135,7 @@ impl Widget for &mut View {
         let [header_container, container_container, footer_container] = Layout::vertical([
             Constraint::Length(2),
             Constraint::Fill(1),
-            Constraint::Length(1),
+            Constraint::Length(2),
         ]).areas(area);
 
         let ViewModel { header, content, footer } = self.get_view_data();
