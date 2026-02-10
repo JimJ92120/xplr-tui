@@ -13,6 +13,7 @@ use ratatui::{
     },
     style::{
         Style,
+        Color,
     }
 };
 
@@ -44,20 +45,18 @@ impl ActionList {
 
     fn render_action_list(&self, area: Rect, buffer: &mut Buffer) {
         let action_list: Vec<(Action, String)> = vec![
-            (Action::Copy, String::from("1: copy | ")),
-            (Action::Move, String::from("2: move | ")),
-            (Action::Rename, String::from("3: rename | ")),
-            (Action::Delete, String::from("4: delete")),
+            (Action::Copy, String::from("[ 1: copy ]")),
+            (Action::Move, String::from("[ 2: move ]")),
+            (Action::Rename, String::from("[ 3: rename ]")),
+            (Action::Delete, String::from("[ 4: delete ]")),
         ];
 
-        Paragraph::new(
-            Line::from(
-                action_list
-                    .iter()
-                    .map(|(action, text)| self.get_list_item(action.clone(), text.clone()))
-                    .collect::<Vec<_>>()
-            )
-        )
+        Paragraph::new(Line::from(
+            action_list
+                .iter()
+                .map(|(action, text)| self.get_list_item(action.clone(), text.clone()))
+                .collect::<Vec<_>>()
+        ))
             .render(area, buffer);
     }
 
@@ -70,7 +69,7 @@ impl ActionList {
         if !current_action.is_none()
             && current_action.unwrap() == action
         {
-            return Span::styled(text, Style::new().green());
+            return Span::styled(text, Style::new().fg(Color::Green));
         }
 
         Span::from(text)
