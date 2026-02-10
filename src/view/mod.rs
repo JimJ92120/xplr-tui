@@ -138,9 +138,10 @@ impl Widget for &mut View {
             Constraint::Fill(1),
             Constraint::Length(2),
         ]).areas(area);
-
         let ViewModel { header, content, footer } = self.get_view_data();
-        Header::render(header_container, buffer, header);
+        
+        Header::new(header)
+            .render(header_container, buffer);
         Content::render(container_container, buffer, content);
         Footer::render(footer_container, buffer, footer);
     }
