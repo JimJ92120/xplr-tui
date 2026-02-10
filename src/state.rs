@@ -2,6 +2,7 @@ use crate::types::{
     DirectoryItemType,
     DirectoryItem,
     Directory,
+    DirectoryList,
 };
 use crate::Api;
 
@@ -11,7 +12,7 @@ pub struct State {
     title: String,
     directory: Directory,
     selected_item_index: usize,
-    parent_directory_list: Vec<String>,
+    parent_directory_list: DirectoryList,
     text_input: String,
     preview: String,
 }
@@ -52,7 +53,7 @@ impl State {
     pub fn selected_item_index(&self) -> usize {
         self.selected_item_index.clone()
     }
-    pub fn parent_directory_list(&self) -> Vec<String> {
+    pub fn parent_directory_list(&self) -> DirectoryList {
         self.parent_directory_list.clone()
     }
     pub fn text_input(&self) -> String {
@@ -112,13 +113,12 @@ impl State {
         let selected_item = self.selected_item().unwrap();
 
         if DirectoryItemType::Directory == selected_item.item_type {
-            let current_directory_path_name = directory.path_name.clone();
             let next_directory_path_name = selected_item.path_name.clone();
             let next_directory = Api::get_directory(next_directory_path_name.clone());
 
             match next_directory {
                 Ok(next_directory) => {
-                    self.parent_directory_list.push(current_directory_path_name);
+                    self.parent_directory_list.push(directory.clone());
                     self.directory = next_directory.clone();
 
                     self.update_selected_item_index(0)
@@ -139,12 +139,9 @@ impl State {
         }
 
         let current_directory_path_name = directory.path_name;
-        let previous_directory_path_name = parent_directory_list.last().unwrap().clone();
-        let previous_directory = Api::get_directory(previous_directory_path_name.clone());
 
-        match previous_directory {
-            Ok(previous_directory) => {
-                self.parent_directory_list.pop();
+        match self.parent_directory_list.pop() {
+            Some(previous_directory) => {
                 self.directory = previous_directory.clone();
                 
                 let selected_item_index = previous_directory.content
@@ -153,10 +150,9 @@ impl State {
                         .unwrap();
                 self.update_selected_item_index(selected_item_index);
             },
-            Err(error) => panic!(
-                "Unable to retrieve previous directory content for '{}' directory.\n{}",
-                previous_directory_path_name,
-                error
+            None => panic!(
+                "Unable to retrieve parent directory for '{}' directory.",
+                current_directory_path_name
             )
         };
     }

@@ -50,6 +50,7 @@ impl Api {
         }
 
         Ok(Directory {
+            name: Self::get_formatted_path_name(directory_path_name.clone()),
             path_name: directory_path_name.clone(),
             content: Self::get_directory_content(directory_path_name.clone())?,
         })
@@ -62,7 +63,7 @@ impl Api {
                 let path_name = entry.unwrap().path().display().to_string();
 
                 DirectoryItem {
-                    name: String::from("item"),
+                    name: Self::get_formatted_path_name(path_name.clone()),
                     path_name: path_name.clone(),
                     item_type: Self::get_content_type(Path::new(&path_name))
                         .expect(&format!("Unable to fetch content type for '{}'.", path_name))
@@ -91,5 +92,12 @@ impl Api {
         }
 
         panic!("'{}' not found.", path.display().to_string());
+    }
+
+    fn get_formatted_path_name(path_name: String) -> String {
+        match path_name.rsplit_once("/") {
+            Some((_, name)) => name.to_string(),
+            None => path_name
+        }
     }
 }

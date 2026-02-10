@@ -14,6 +14,7 @@ use ratatui::{
 use crate::types::{
     DirectoryItem,
     Directory,
+    DirectoryList,
 };
 use super::super::components::{
     directory_list::{
@@ -39,7 +40,7 @@ pub struct ContentData {
     pub directory: Directory,
     pub selected_item_index: usize,
     pub selected_item: Option<DirectoryItem>,
-    pub parent_directory_list: Vec<String>,
+    pub parent_directory_list: DirectoryList,
     pub preview: String,
 }
 
@@ -73,7 +74,7 @@ impl Content {
         ]).areas(area);
 
         ParentDirectoryList::new(ParentDirectoryListData {
-            directory: self.data.directory.clone(),
+            current_directory: self.data.directory.clone(),
             parent_directory_list: self.data.parent_directory_list.clone(),
         })
             .render(title_container, buffer);

@@ -11,12 +11,13 @@ use ratatui::{
 
 use crate::types::{
     Directory,
+    DirectoryList,
 };
 
 #[derive(Clone)]
 pub struct ParentDirectoryListData {
-    pub directory: Directory,
-    pub parent_directory_list: Vec<String>,
+    pub current_directory: Directory,
+    pub parent_directory_list: DirectoryList,
 }
 
 pub struct ParentDirectoryList {
@@ -41,7 +42,7 @@ impl ParentDirectoryList {
     }
 
     fn render_no_list(&self, area: Rect, buffer: &mut Buffer) {
-        Paragraph::new(self.data.directory.path_name.clone())
+        Paragraph::new(self.data.current_directory.path_name.clone())
             .render(area, buffer);
     }
 
@@ -52,35 +53,29 @@ impl ParentDirectoryList {
 
     fn get_parent_directory_list(&self) -> String {
         let ParentDirectoryListData {
-            directory,
+            current_directory,
             parent_directory_list,
             ..
         } = self.data.clone();
 
         if parent_directory_list.is_empty() {
-            return directory.path_name;
+            return current_directory.path_name;
         } else {
             let mut directory_list = parent_directory_list;
-            directory_list.push(directory.path_name);
+            directory_list.push(current_directory);
 
             directory_list
                 .iter()
                 .enumerate()
-                .map(|(index, directory_path_name)| {
+                .map(|(index, directory)| {
                     if 0 < index {
-                        let (_, formatted_directory_name) = directory_path_name
-                            .split_once(
-                                format!("{}/", directory_list[index - 1].clone()).as_str()
-                            )
-                            .unwrap();
-
-                        format!(" > {}", formatted_directory_name).to_string()
+                        return directory.name.to_string();
                     } else {
-                        directory_path_name.to_string()
+                        directory.path_name.to_string()
                     }
                 })
                 .collect::<Vec<String>>()
-                .join("")
+                .join(" > ")
                 .to_string()
         }
     }
