@@ -44,10 +44,10 @@ impl ActionList {
 
     fn render_action_list(&self, area: Rect, buffer: &mut Buffer) {
         let action_list: Vec<(Action, String)> = vec![
-            (Action::Copy, String::from("F1: copy | ")),
-            (Action::Move, String::from("F2: move | ")),
-            (Action::Rename, String::from("F3: rename | ")),
-            (Action::Delete, String::from("F4: delete")),
+            (Action::Copy, String::from("1: copy | ")),
+            (Action::Move, String::from("2: move | ")),
+            (Action::Rename, String::from("3: rename | ")),
+            (Action::Delete, String::from("4: delete")),
         ];
 
         Paragraph::new(
