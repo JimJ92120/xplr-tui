@@ -50,7 +50,6 @@ impl Api {
         }
 
         Ok(Directory {
-            name: String::from("root"),
             path_name: directory_path_name.clone(),
             content: Self::get_directory_content(directory_path_name.clone())?,
         })

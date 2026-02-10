@@ -15,7 +15,6 @@ pub type DirectoryContent = Vec<DirectoryItem>;
 
 #[derive(Clone)]
 pub struct Directory {
-    pub name: String,
     pub path_name: String,
     pub content: DirectoryContent,
 }
