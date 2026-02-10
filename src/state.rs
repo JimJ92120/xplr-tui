@@ -164,6 +164,11 @@ impl State {
     pub fn type_text(&mut self, char: char) {
         self.text_input.push(char);
     }
+    pub fn delete_text_last_char(&mut self) {
+        if !self.text_input.is_empty() {
+            self.text_input.pop();
+        }
+    }
 
     fn update_selected_item_index(&mut self, new_index: usize) {        
         // bound to check before calling to avoid unnecessary checks at runtime

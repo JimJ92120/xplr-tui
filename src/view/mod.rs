@@ -120,6 +120,7 @@ impl View {
                     KeyCode::Left => state.load_previous_directory(),
 
                     KeyCode::Char(char) => state.type_text(char),
+                    KeyCode::Backspace => state.delete_text_last_char(),
                 
                     _ => {}
                 };
