@@ -17,7 +17,6 @@ use ratatui::{
     }
 };
 
-mod components;
 mod layout;
 
 use crate::types::{

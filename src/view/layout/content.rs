@@ -16,7 +16,7 @@ use crate::types::{
     Directory,
     DirectoryList,
 };
-use super::super::components::{
+use crate::components::{
     directory_list::{
         DirectoryContent,
         DirectoryContentData

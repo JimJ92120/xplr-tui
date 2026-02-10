@@ -6,6 +6,7 @@ use std::{
 };
 
 mod types;
+mod components;
 mod api;
 mod view;
 mod state;

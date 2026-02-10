@@ -15,7 +15,7 @@ use crate::types::{
     Action
 };
 
-use super::super::components::{
+use crate::components::{
     action_list::{
         ActionList,
         ActionListData,
