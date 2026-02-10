@@ -142,7 +142,8 @@ impl Widget for &mut View {
         
         Header::new(header)
             .render(header_container, buffer);
-        Content::render(container_container, buffer, content);
+        Content::new(content)
+            .render(container_container, buffer);
         Footer::new(footer)
             .render(footer_container, buffer);
     }

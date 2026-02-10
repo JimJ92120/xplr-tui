@@ -27,53 +27,63 @@ pub struct ContentData {
     pub preview: String,
 }
 
-pub struct Content {}
+pub struct Content {
+    data: ContentData,
+}
 
-impl Content {
-    pub fn render(area: Rect, buffer: &mut Buffer, data: ContentData) {
+impl Widget for Content {
+    fn render(self, area: Rect, buffer: &mut Buffer) {
         let [left_container, right_container] = Layout::horizontal([
             Constraint::Percentage(50),
             Constraint::Percentage(50)
         ]).areas(area);
 
-        Content::render_left_container(left_container, buffer, data.clone());
-        Content::render_right_container(right_container, buffer, data.clone());
+        self.render_left_container(left_container, buffer);
+        self.render_right_container(right_container, buffer);
+    }
+}
+
+impl Content {
+    pub fn new(data: ContentData) -> Self {
+        Self {
+            data
+        }
     }
 
-    fn render_left_container(area: Rect, buffer: &mut Buffer, data: ContentData) {
+    fn render_left_container(&self, area: Rect, buffer: &mut Buffer) {
         let [title_container, list_container] = Layout::vertical([
             Constraint::Length(2),
             Constraint::Fill(1),
         ]).areas(area);
 
-        let ContentData {
-            directory_content,
-            selected_item_index,
-            ..
-        } = data.clone();
         Block::new()
-            .title(Self::get_directory_list(data.clone()))
+            .title(self.get_directory_list())
             .render(title_container, buffer);
         List::new(ListData {
-            list: directory_content,
-            selected_item_index,
+            list: self.data.directory_content.clone(),
+            selected_item_index: self.data.selected_item_index.clone(),
         })
             .render(list_container, buffer);
     }
 
-    fn render_right_container(area: Rect, buffer: &mut Buffer, data: ContentData) {
-        match data.selected_item.clone() {
+    fn render_right_container(&self, area: Rect, buffer: &mut Buffer) {
+        let ContentData {
+            selected_item,
+            ..
+        } = self.data.clone();
+
+        match selected_item {
             Some(selected_item) => {
                 let [details_container, preview_container] = Layout::vertical([
                     Constraint::Length(3),
                     Constraint::Fill(1),
                 ]).areas(area);
 
-                Paragraph::new(Self::get_details(data.clone()))
+                Paragraph::new(self.get_details())
                     .render(details_container, buffer);
 
                 if "file" == selected_item.1 {
-                    Paragraph::new(Self::get_preview(data.clone()))
+                    Paragraph::new(self.get_preview())
                         .render(preview_container, buffer);
                 }
             },
@@ -84,12 +94,12 @@ impl Content {
         }
     }
 
-    fn get_directory_list(data: ContentData) -> String {
+    fn get_directory_list(&self) -> String {
         let ContentData {
             directory_name,
             parent_directory_list,
             ..
-        } = data;
+        } = self.data.clone();
 
         if parent_directory_list.is_empty() {
             directory_name
@@ -119,11 +129,11 @@ impl Content {
         }
     }
 
-    fn get_details(data: ContentData) -> Vec<Line<'static>> {
+    fn get_details(&self) -> Vec<Line<'static>> {
         let ContentData {
             selected_item,
             ..
-        } = data;
+        } = self.data.clone();
 
         let details: Vec<Line> = if !selected_item.is_none() {
             let selected_item = selected_item.unwrap();
@@ -149,12 +159,12 @@ impl Content {
         details
     }
 
-    fn get_preview(data: ContentData) -> String {
+    fn get_preview(&self) -> String {
         let ContentData {
             selected_item,
             preview,
             ..
-        } = data.clone();
+        } = self.data.clone();
 
         if selected_item.is_none() {
             return String::from("\nNo item selected.");
@@ -162,6 +172,6 @@ impl Content {
             return String::from("\nNo preview available.");
         }
 
-        format!("\nPreview:\n{}", data.preview)
+        format!("\nPreview:\n{}", preview)
     }
 }
