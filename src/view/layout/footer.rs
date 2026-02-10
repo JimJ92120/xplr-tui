@@ -43,7 +43,7 @@ impl Widget for Footer {
         } = self.data.clone();
         let [action_list_container, action_input_container] = Layout::vertical([
             Constraint::Length(1),
-            Constraint::Length(1),
+            Constraint::Length(2),
         ]).areas(area);
 
         ActionList::new(ActionListData {

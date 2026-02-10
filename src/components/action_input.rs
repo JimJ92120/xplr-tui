@@ -1,6 +1,8 @@
 use ratatui::{
     buffer::Buffer,
     layout::{
+        Constraint,
+        Layout,
         Rect
     },
     text::{
@@ -33,9 +35,17 @@ pub struct ActionInput {
 
 impl Widget for ActionInput {
     fn render(self, area: Rect, buffer: &mut Buffer) {
-        if !self.data.current_action.is_none() {
-            self.render_action_input(area, buffer);
+        if self.data.current_action.is_none() {
+            return;
         }
+
+        let [input_container, confirmation_container] = Layout::vertical([
+            Constraint::Length(1),
+            Constraint::Length(1),
+        ]).areas(area);
+
+        self.render_action_input(input_container, buffer);
+        self.render_confirmation_text(confirmation_container, buffer);
     }
 }
 
@@ -51,6 +61,11 @@ impl ActionInput {
             self.get_input_label(),
             self.get_input_text(),
         ]))
+            .render(area, buffer);
+    }
+
+    fn render_confirmation_text(&self, area: Rect, buffer: &mut Buffer) {
+        Paragraph::new("Press [Enter] to confirm")
             .render(area, buffer);
     }
 
