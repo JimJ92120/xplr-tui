@@ -13,7 +13,8 @@ use ratatui::{
         self,
         Event,
         KeyCode,
-        KeyEventKind
+        KeyEventKind,
+        KeyModifiers,
     }
 };
 
@@ -103,34 +104,40 @@ impl View {
     }
 
     fn event_callback(&mut self) -> Result<()> {
-        if let Event::Key(key) = event::read()? {
+        if let Event::Key(key_event) = event::read()? {
             let View {
                 state,
                 ..
             } = self;
 
-            if KeyEventKind::Press == key.kind {
-                match key.code {
-                    KeyCode::Esc => state.stop(),
+            if KeyEventKind::Press == key_event.kind {
+                if key_event.modifiers.contains(KeyModifiers::ALT) {
+                    match key_event.code {
+                        KeyCode::Char('1') => state.run_action(Action::Copy),
+                        KeyCode::Char('2') => state.run_action(Action::Move),
+                        KeyCode::Char('3') => state.run_action(Action::Rename),
+                        KeyCode::Char('4') => state.run_action(Action::Delete),
+                    
+                        _ => {}
+                    };
+                } else {
+                    match key_event.code {
+                        KeyCode::Esc => state.stop(),
 
-                    KeyCode::Up => state.select_previous_item(),
-                    KeyCode::Down => state.select_next_item(),
-                    KeyCode::PageUp => state.select_first_item(),
-                    KeyCode::PageDown => state.select_last_item(),
+                        KeyCode::Up => state.select_previous_item(),
+                        KeyCode::Down => state.select_next_item(),
+                        KeyCode::PageUp => state.select_first_item(),
+                        KeyCode::PageDown => state.select_last_item(),
 
-                    KeyCode::Right => state.load_next_directory(),
-                    KeyCode::Left => state.load_previous_directory(),
+                        KeyCode::Right => state.load_next_directory(),
+                        KeyCode::Left => state.load_previous_directory(),
 
-                    KeyCode::Char('1') => state.run_action(Action::Copy),
-                    KeyCode::Char('2') => state.run_action(Action::Move),
-                    KeyCode::Char('3') => state.run_action(Action::Rename),
-                    KeyCode::Char('4') => state.run_action(Action::Delete),
-
-                    KeyCode::Char(char) => state.type_text(char),
-                    KeyCode::Backspace => state.delete_text_last_char(),
-                
-                    _ => {}
-                };
+                        KeyCode::Char(char) => state.type_text(char),
+                        KeyCode::Backspace => state.delete_text_last_char(),
+                    
+                        _ => {}
+                    };
+                }
             } 
         };
 
