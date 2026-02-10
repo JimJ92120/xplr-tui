@@ -130,8 +130,6 @@ impl State {
             },
             None => ()
         }
-
-
     }
     pub fn load_previous_directory(&mut self) {
         let State {
