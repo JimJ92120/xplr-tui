@@ -14,8 +14,10 @@ use ratatui::{
 
 use crate::types::{
     Directory,
+    DirectoryItem,
 };
 
+#[derive(Clone)]
 pub struct DirectoryContentData {
     pub directory: Directory,
     pub selected_item_index: usize,
@@ -51,7 +53,7 @@ impl DirectoryContent {
         let DirectoryContentData {
             selected_item_index,
             directory
-        } = self.data;
+        } = self.data.clone();
         let scroll = if (selected_item_index as u16) < area.height {
             0
         } else {
@@ -62,18 +64,20 @@ impl DirectoryContent {
             directory.content
                 .iter()
                 .enumerate()
-                .map(|(index, item)| {
-                    let line = Line::from(format!("{}.{}", index, item.path_name));
-
-                    if selected_item_index == index {
-                        return line.bg(Color::Green);
-                    }
-
-                    line
-                })
+                .map(|(index, item)| self.get_list_item(item.clone(), index))
                 .collect::<Vec<Line>>()
         )
             .scroll((scroll, 0))
             .render(area, buffer);
+    }
+
+    fn get_list_item(&self, item: DirectoryItem, index: usize) -> Line<'_> {
+        let line = Line::from(format!("{}.{}", index, item.path_name));
+
+        if self.data.selected_item_index == index {
+            return line.bg(Color::Green);
+        }
+
+        line
     }
 }
