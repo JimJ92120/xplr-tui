@@ -5,7 +5,6 @@ use ratatui::{
         Layout,
         Rect
     },
-    text::{ Line },
     widgets::{
         Widget,
         Paragraph
@@ -24,6 +23,10 @@ use super::super::components::{
     parent_directory_list::{
         ParentDirectoryList,
         ParentDirectoryListData,
+    },
+    directory_item_details::{
+        DirectoryItemDetails,
+        DirectoryItemDetailsData
     },
     directory_item_preview::{
         DirectoryItemPreview,
@@ -98,7 +101,9 @@ impl Content {
                     Constraint::Fill(1),
                 ]).areas(area);
 
-                Paragraph::new(self.get_details())
+                DirectoryItemDetails::new(DirectoryItemDetailsData {
+                    selected_item: selected_item.clone()
+                })
                     .render(details_container, buffer);
                 DirectoryItemPreview::new(DirectoryItemPreviewData {
                     preview: preview.clone(),
@@ -107,39 +112,9 @@ impl Content {
                     .render(preview_container, buffer);
             },
             None => {
-                Paragraph::new("No item selected")
+                Paragraph::new("No item selected.")
                     .render(area, buffer);
             }
         }
-    }
-
-    fn get_details(&self) -> Vec<Line<'static>> {
-        let ContentData {
-            selected_item,
-            ..
-        } = self.data.clone();
-
-        let details: Vec<Line> = if !selected_item.is_none() {
-            let selected_item = selected_item.unwrap();
-
-            vec![
-                Line::from("Details:"),
-                Line::from(format!(
-                    "- name: {}",
-                    selected_item.name
-                )),
-                Line::from(format!(
-                    "- type: {:?}",
-                    selected_item.item_type
-                )),
-                Line::from(""),
-            ]
-        } else {
-            vec![
-                Line::from("No item selected.")
-            ]
-        };
-
-        details
     }
 }
