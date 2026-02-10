@@ -17,32 +17,41 @@ pub struct ListData {
     pub selected_item_index: usize,
 }
 
-pub struct List {}
+pub struct List {
+    data: ListData,
+}
+
+impl Widget for List {
+    fn render(self, area: Rect, buffer: &mut Buffer) {
+        if self.data.list.is_empty() {
+            self.render_no_list(area, buffer);
+        } else {
+            self.render_list(area, buffer);                
+        }
+    }
+}
 
 impl List {
-    pub fn render(area: Rect, buffer: &mut Buffer, data: ListData) {
-        if data.list.is_empty() {
-            Self::render_no_list(area, buffer);
-        } else {
-            Self::render_list(area, buffer, data);                
+    pub fn new(data: ListData) -> Self {
+        Self {
+            data
         }
     }
 
-    fn render_no_list(area: Rect, buffer: &mut Buffer) {
+    fn render_no_list(self, area: Rect, buffer: &mut Buffer) {
         Paragraph::new("No item found.")
             .render(area, buffer);
     }
 
-    fn render_list(area: Rect, buffer: &mut Buffer, data: ListData) {
+    fn render_list(self, area: Rect, buffer: &mut Buffer) {
         let ListData {
             selected_item_index,
             list
-        } = data;
-        let selected_item_index = selected_item_index as u16;
-        let scroll = if selected_item_index < area.height {
+        } = self.data;
+        let scroll = if (selected_item_index as u16) < area.height {
             0
         } else {
-            selected_item_index - area.height + 1
+            (selected_item_index as u16) - area.height + 1
         };
 
         Paragraph::new(
@@ -52,7 +61,7 @@ impl List {
                 .map(|(index, item)| {
                     let line = Line::from(format!("{}.{}", index, item.0));
 
-                    if data.selected_item_index == index {
+                    if selected_item_index == index {
                         return line.bg(Color::Green);
                     }
 

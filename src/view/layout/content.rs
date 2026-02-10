@@ -54,14 +54,11 @@ impl Content {
         Block::new()
             .title(Self::get_directory_list(data.clone()))
             .render(title_container, buffer);
-        List::render(
-            list_container,
-            buffer,
-            ListData {
-                list: directory_content,
-                selected_item_index
-            }
-        );
+        List::new(ListData {
+            list: directory_content,
+            selected_item_index,
+        })
+            .render(list_container, buffer);
     }
 
     fn render_right_container(area: Rect, buffer: &mut Buffer, data: ContentData) {
