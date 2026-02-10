@@ -120,7 +120,8 @@ impl State {
                 Ok(next_directory) => {
                     self.parent_directory_list.push(current_directory_path_name);
                     self.directory = next_directory.clone();
-                    self.selected_item_index = 0;
+
+                    self.update_selected_item_index(0)
                 },
                 Err(error) => panic!("Unable to retrieve content for '{}' directory.\n{}", next_directory_path_name, error)
             };
@@ -145,10 +146,12 @@ impl State {
             Ok(previous_directory) => {
                 self.parent_directory_list.pop();
                 self.directory = previous_directory.clone();
-                self.selected_item_index = previous_directory.content
+                
+                let selected_item_index = previous_directory.content
                         .iter()
                         .position(|item| current_directory_path_name == item.path_name)
                         .unwrap();
+                self.update_selected_item_index(selected_item_index);
             },
             Err(error) => panic!(
                 "Unable to retrieve previous directory content for '{}' directory.\n{}",
