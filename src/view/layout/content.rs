@@ -19,7 +19,10 @@ use crate::types::{
     Directory,
 };
 use super::super::components::{
-    list::{ List, ListData }
+    directory_list::{
+        DirectoryContent,
+        DirectoryContentData
+    }
 };
 
 #[derive(Clone)]
@@ -63,8 +66,8 @@ impl Content {
         Block::new()
             .title(self.get_directory_list())
             .render(title_container, buffer);
-        List::new(ListData {
-            list: self.data.directory.clone(),
+        DirectoryContent::new(DirectoryContentData {
+            directory: self.data.directory.clone(),
             selected_item_index: self.data.selected_item_index.clone(),
         })
             .render(list_container, buffer);

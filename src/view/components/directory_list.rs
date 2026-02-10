@@ -16,18 +16,18 @@ use crate::types::{
     Directory,
 };
 
-pub struct ListData {
-    pub list: Directory,
+pub struct DirectoryContentData {
+    pub directory: Directory,
     pub selected_item_index: usize,
 }
 
-pub struct List {
-    data: ListData,
+pub struct DirectoryContent {
+    data: DirectoryContentData,
 }
 
-impl Widget for List {
+impl Widget for DirectoryContent {
     fn render(self, area: Rect, buffer: &mut Buffer) {
-        if self.data.list.content.is_empty() {
+        if self.data.directory.content.is_empty() {
             self.render_no_list(area, buffer);
         } else {
             self.render_list(area, buffer);                
@@ -35,8 +35,8 @@ impl Widget for List {
     }
 }
 
-impl List {
-    pub fn new(data: ListData) -> Self {
+impl DirectoryContent {
+    pub fn new(data: DirectoryContentData) -> Self {
         Self {
             data
         }
@@ -48,9 +48,9 @@ impl List {
     }
 
     fn render_list(self, area: Rect, buffer: &mut Buffer) {
-        let ListData {
+        let DirectoryContentData {
             selected_item_index,
-            list
+            directory
         } = self.data;
         let scroll = if (selected_item_index as u16) < area.height {
             0
@@ -59,7 +59,7 @@ impl List {
         };
 
         Paragraph::new(
-            list.content
+            directory.content
                 .iter()
                 .enumerate()
                 .map(|(index, item)| {
