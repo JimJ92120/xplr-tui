@@ -28,7 +28,7 @@ impl Header {
         }
     }
 
-    fn render_title(self, area: Rect, buffer: &mut Buffer) {
+    fn render_title(&self, area: Rect, buffer: &mut Buffer) {
         Paragraph::new(format!("{}", self.data.title))
             .render(area, buffer);
     }
