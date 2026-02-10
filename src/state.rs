@@ -22,7 +22,9 @@ impl State {
         let directory_content = Api::get_directory_content(directory_name.clone())
             .expect(&format!("Unable to initialize State with '{}' directory name", directory_name));
 
-        Self {
+        
+
+        let mut state = Self {
             is_running: false,
             title,
             directory_content,
@@ -31,7 +33,10 @@ impl State {
             parent_directory_list: Vec::new(),
             text_input: String::new(),
             preview: String::new()
-        }
+        };
+        state.load_preview();
+
+        state
     }
 
     pub fn is_running(&self) -> bool {
@@ -185,11 +190,11 @@ impl State {
             return;
         }
 
-        match Api::get_file_content(selected_item.unwrap().0) {
-            Ok(content) => {
-                self.preview = content;
-            },
-            Err(_) => ()
+        let selected_item = selected_item.unwrap();
+        if "file" == selected_item.1 {
+            self.preview = Api::get_file_content(selected_item.0.clone()).expect(
+                &format!("'{}' is not a file.", selected_item.0)
+            );
         }
     }
 }
