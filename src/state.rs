@@ -16,7 +16,7 @@ pub struct State {
     parent_directory_list: DirectoryList,
     text_input: String,
     preview: String,
-    action: Option<Action>,
+    current_action: Option<Action>,
 }
 
 impl State {
@@ -37,7 +37,7 @@ impl State {
             parent_directory_list: Vec::new(),
             text_input: String::new(),
             preview: String::new(),
-            action: None,
+            current_action: None,
         };
         state.load_preview();
 
@@ -78,8 +78,8 @@ impl State {
 
         Some(directory.content[*selected_item_index].clone())
     }
-    pub fn action(&self) -> Option<Action> {
-        self.action.clone()
+    pub fn current_action(&self) -> Option<Action> {
+        self.current_action.clone()
     }
 
     pub fn start(&mut self) {
@@ -112,15 +112,15 @@ impl State {
     }
 
     pub fn run_action(&mut self, action: Action) {
-        match self.action.clone() {
+        match self.current_action.clone() {
             Some(current_action) => {
                 if current_action == action {
-                    self.action = None;
+                    self.current_action = None;
                 }
             },
             None => {
                 self.clear_text();
-                self.action = Some(action);
+                self.current_action = Some(action);
             }
         }
     }
@@ -185,12 +185,12 @@ impl State {
         self.text_input = String::new();
     } 
     pub fn type_text(&mut self, char: char) {
-        if !self.action.is_none() {
+        if !self.current_action.is_none() {
             self.text_input.push(char);
         }
     }
     pub fn delete_text_last_char(&mut self) {
-        if !self.text_input.is_empty() && !self.action.is_none() {
+        if !self.text_input.is_empty() && !self.current_action.is_none() {
             self.text_input.pop();
         }
     }

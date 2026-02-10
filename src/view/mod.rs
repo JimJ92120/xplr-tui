@@ -96,7 +96,7 @@ impl View {
                 preview: state.preview(),
             },
             footer: FooterData {
-                current_action: state.action(),
+                current_action: state.current_action(),
                 text_input: state.text_input(),
             }
         }
