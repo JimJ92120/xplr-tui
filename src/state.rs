@@ -110,22 +110,28 @@ impl State {
             directory,
             ..
         } = self.clone();
-        let selected_item = self.selected_item().unwrap();
 
-        if DirectoryItemType::Directory == selected_item.item_type {
-            let next_directory_path_name = selected_item.path_name.clone();
-            let next_directory = Api::get_directory(next_directory_path_name.clone());
+        match self.selected_item() {
+            Some(selected_item) => {
+                if DirectoryItemType::Directory == selected_item.item_type {
+                    let next_directory_path_name = selected_item.path_name.clone();
+                    let next_directory = Api::get_directory(next_directory_path_name.clone());
 
-            match next_directory {
-                Ok(next_directory) => {
-                    self.parent_directory_list.push(directory.clone());
-                    self.directory = next_directory.clone();
+                    match next_directory {
+                        Ok(next_directory) => {
+                            self.parent_directory_list.push(directory.clone());
+                            self.directory = next_directory.clone();
 
-                    self.update_selected_item_index(0)
-                },
-                Err(error) => panic!("Unable to retrieve content for '{}' directory.\n{}", next_directory_path_name, error)
-            };
-        } 
+                            self.update_selected_item_index(0)
+                        },
+                        Err(error) => panic!("Unable to retrieve content for '{}' directory.\n{}", next_directory_path_name, error)
+                    };
+                } 
+            },
+            None => ()
+        }
+
+
     }
     pub fn load_previous_directory(&mut self) {
         let State {
