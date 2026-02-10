@@ -8,7 +8,6 @@ use ratatui::{
     text::{ Line },
     widgets::{
         Widget,
-        Block,
         Paragraph
     },
 };
@@ -22,6 +21,10 @@ use super::super::components::{
     directory_list::{
         DirectoryContent,
         DirectoryContentData
+    },
+    parent_directory_list::{
+        ParentDirectoryList,
+        ParentDirectoryListData,
     }
 };
 
@@ -63,8 +66,10 @@ impl Content {
             Constraint::Fill(1),
         ]).areas(area);
 
-        Block::new()
-            .title(self.get_directory_list())
+        ParentDirectoryList::new(ParentDirectoryListData {
+            directory: self.data.directory.clone(),
+            parent_directory_list: self.data.parent_directory_list.clone(),
+        })
             .render(title_container, buffer);
         DirectoryContent::new(DirectoryContentData {
             directory: self.data.directory.clone(),
@@ -98,41 +103,6 @@ impl Content {
                 Paragraph::new("No item selected")
                     .render(area, buffer);
             }
-        }
-    }
-
-    fn get_directory_list(&self) -> String {
-        let ContentData {
-            directory,
-            parent_directory_list,
-            ..
-        } = self.data.clone();
-
-        if parent_directory_list.is_empty() {
-            return directory.path_name;
-        } else {
-            let mut directory_list = parent_directory_list;
-            directory_list.push(directory.path_name);
-
-            directory_list
-                .iter()
-                .enumerate()
-                .map(|(index, directory_path_name)| {
-                    if 0 < index {
-                        let (_, formatted_directory_name) = directory_path_name
-                            .split_once(
-                                format!("{}/", directory_list[index - 1].clone()).as_str()
-                            )
-                            .unwrap();
-
-                        format!(" > {}", formatted_directory_name).to_string()
-                    } else {
-                        directory_path_name.to_string()
-                    }
-                })
-                .collect::<Vec<String>>()
-                .join("")
-                .to_string()
         }
     }
 
