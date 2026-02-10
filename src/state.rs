@@ -119,6 +119,7 @@ impl State {
                 }
             },
             None => {
+                self.clear_text();
                 self.action = Some(action);
             }
         }
@@ -180,11 +181,16 @@ impl State {
         };
     }
 
+    pub fn clear_text(&mut self) {
+        self.text_input = String::new();
+    } 
     pub fn type_text(&mut self, char: char) {
-        self.text_input.push(char);
+        if !self.action.is_none() {
+            self.text_input.push(char);
+        }
     }
     pub fn delete_text_last_char(&mut self) {
-        if !self.text_input.is_empty() {
+        if !self.text_input.is_empty() && !self.action.is_none() {
             self.text_input.pop();
         }
     }
