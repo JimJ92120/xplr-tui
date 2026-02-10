@@ -15,11 +15,7 @@ pub struct Header {}
 
 impl Header {
     pub fn render(area: Rect, buffer: &mut Buffer, data: HeaderData) {
-        Paragraph::new(Self::get_header(data))
+        Paragraph::new(format!("{}", data.title))
             .render(area, buffer);
-    }
-
-    fn get_header(data: HeaderData) -> String {
-        format!("{}", data.title)
     }
 }
