@@ -30,13 +30,12 @@ fn main() -> Result<()> {
         String::new()
     };
 
-    let state = State::new(
-        String::from("XPLR"),
-        path_name.to_string()
+    let mut view = View::new(
+        State::new(
+            path_name.to_string()
+        ),
+        Store::new()
     );
-    let store = Store::new();
-    println!("store: {:?}", store);
-    let mut view = View::new(state, store);
 
     println!("Starting...");
     sleep(Duration::from_secs(1));

@@ -1,9 +1,13 @@
 use std::any::Any;
 
 mod command;
+mod client;
 
 use command::{
     CommandStore,
+};
+use client::{
+    ClientStore,
 };
 
 pub trait NestedStore {
@@ -14,31 +18,23 @@ pub trait NestedStore {
     }
 }
 
-
-#[derive(Debug, Clone)]
-pub enum StoreType {
-    Command(CommandStore),
-}
-impl StoreType {
-    pub fn get(&self) {
-        println!("enum: {:?}", self);
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct Store {
     pub command: CommandStore,
+    pub client: ClientStore,
 }
 impl Store {
     pub fn new() -> Self {
         Self {
             command: CommandStore::new(),
+            client: ClientStore::new(),
         }
     }
 
     pub fn get(&self, store_key: &str, field: &str) -> Box<dyn Any> {
         match store_key {
             "command" => self.command.clone().get(field),
+            "client" => self.client.clone().get(field),
 
             _ => panic!("store not found"),
         }
@@ -48,6 +44,9 @@ impl Store {
         match store_key {
             "command" => {
                 self.command.dispatch(action, payload);
+            },
+            "client" => {
+                self.client.dispatch(action, payload);
             },
 
             _ => panic!("store not found"),

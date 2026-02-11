@@ -64,9 +64,13 @@ impl View {
 
     pub fn run(&mut self) -> Result<()> {
         ratatui::run(|terminal: &mut DefaultTerminal| -> Result<()> {
-            self.state.start();
+            self.store.dispatch("client", "start", Box::new(()));
 
-            while self.state.is_running() {
+            while self.store.get("client", "is_running")
+                .downcast_ref::<bool>()
+                .unwrap()
+                .clone()
+            {
                 terminal.draw(|frame| self.render(frame))?;
 
                 self.event_callback()?;
@@ -94,7 +98,7 @@ impl View {
 
         ViewModel {
             header: HeaderData {
-                title: state.title(),
+                title: String::from("XPLR"),
             },
             content: ContentData {
                 directory: state.directory(),
@@ -133,7 +137,7 @@ impl View {
                     };
                 } else {
                     match key_event.code {
-                        KeyCode::Esc => state.stop(),
+                        KeyCode::Esc => store.dispatch("client", "stop", Box::new(())),
 
                         KeyCode::Up => state.select_previous_item(),
                         KeyCode::Down => state.select_next_item(),

@@ -8,8 +8,6 @@ use crate::Api;
 
 #[derive(Clone)]
 pub struct State {
-    is_running: bool,
-    title: String,
     directory: Directory,
     selected_item_index: usize,
     parent_directory_list: DirectoryList,
@@ -18,7 +16,6 @@ pub struct State {
 
 impl State {
     pub fn new(
-        title: String,
         path_name: String,
     ) -> Self {
         let directory_path_name = Api::get_root_directory_path_name(path_name.clone())
@@ -27,8 +24,6 @@ impl State {
             .expect(&format!("Unable to initialize State with '{}' directory name", directory_path_name));
 
         let mut state = Self {
-            is_running: false,
-            title,
             directory,
             selected_item_index: 0,
             parent_directory_list: Vec::new(),
@@ -39,12 +34,6 @@ impl State {
         state
     }
 
-    pub fn is_running(&self) -> bool {
-        self.is_running.clone()
-    }
-    pub fn title(&self) -> String {
-        self.title.clone()
-    }
     pub fn directory(&self) -> Directory {
         self.directory.clone()
     }
@@ -69,14 +58,6 @@ impl State {
         }
 
         Some(directory.content[*selected_item_index].clone())
-    }
-
-    pub fn start(&mut self) {
-        self.is_running = true;
-    }
-
-    pub fn stop(&mut self) {
-        self.is_running = false;
     }
 
     pub fn select_next_item(&mut self) {
