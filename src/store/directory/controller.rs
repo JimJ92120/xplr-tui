@@ -81,7 +81,9 @@ impl DirectoryController {
             panic!("'{}' is not a file.", file_name);
         }
 
-        fs::read_to_string(file_path)
+        Ok(fs::read_to_string(file_path)
+            .unwrap_or(String::new())
+        )
     }
 
     fn get_content_type(path: &Path) -> Result<DirectoryItemType> {

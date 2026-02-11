@@ -187,9 +187,10 @@ impl DirectoryStore {
 
         let selected_item = selected_item.unwrap();
         if DirectoryItemType::File == selected_item.item_type {
-            self.preview = DirectoryController::get_file_content(selected_item.path_name.clone()).expect(
-                &format!("'{}' is not a file.", selected_item.path_name)
-            );
+            self.preview = DirectoryController::get_file_content(selected_item.path_name.clone())
+                .expect(
+                    &format!("'{}' is not a file.", selected_item.path_name)
+                );
         }
     }
 }
