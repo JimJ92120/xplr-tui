@@ -86,7 +86,7 @@ impl View {
         );
     }
 
-    fn get_view_data(&self) -> ViewModel {
+    fn data(&self) -> ViewModel {
         let View {
             store,
             ..
@@ -159,7 +159,7 @@ impl Widget for &mut View {
             Constraint::Fill(1),
             Constraint::Length(3),
         ]).areas(area);
-        let ViewModel { header, content, footer } = self.get_view_data();
+        let ViewModel { header, content, footer } = self.data();
         
         Header::new(header)
             .render(header_container, buffer);

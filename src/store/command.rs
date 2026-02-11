@@ -37,7 +37,7 @@ impl NestedStore for CommandStore {
     fn dispatch(&mut self, action: &str, payload: Box<dyn Any>) {
         match action {
             "type_input" => self.type_input(
-                *payload.downcast_ref::<char>().unwrap()
+                payload.downcast_ref::<char>().unwrap().clone()
             ),
             "run_command" => self.run_command(
                 payload.downcast_ref::<Command>().unwrap().clone()
