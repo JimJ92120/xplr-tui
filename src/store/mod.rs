@@ -1,4 +1,7 @@
-use std::any::Any;
+use std::{
+    any::Any,
+    clone::Clone
+};
 
 mod command;
 mod client;
@@ -53,14 +56,16 @@ impl Store {
         format!("'{}' store not found.", store_key)
     }
 
-    pub fn get(&self, store_key: &str, field: &str) -> Box<dyn Any> {
-        match store_key {
+    pub fn get<T: Clone + 'static>(&self, store_key: &str, field: &str) -> T {
+        let result = match store_key {
             "command" => self.command.clone().get(field),
             "client" => self.client.clone().get(field),
             "directory" => self.directory.clone().get(field),
 
             _ => panic!("{}", Self::store_not_found(store_key)),
-        }
+        };
+
+        result.downcast_ref::<T>().unwrap().clone()
     }
 
     pub fn action(&mut self, store_key: &str, action: &str) {

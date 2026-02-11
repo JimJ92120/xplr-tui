@@ -66,10 +66,7 @@ impl View {
         ratatui::run(|terminal: &mut DefaultTerminal| -> Result<()> {
             self.store.action("client", "start");
 
-            while self.store.get("client", "is_running")
-                .downcast_ref::<bool>()
-                .unwrap()
-                .clone()
+            while self.store.get::<bool>("client", "is_running")
             {
                 terminal.draw(|frame| self.render(frame))?;
 
@@ -100,36 +97,15 @@ impl View {
                 title: String::from("XPLR"),
             },
             content: ContentData {
-                directory: store.get("directory", "directory")
-                    .downcast_ref::<Directory>()
-                    .unwrap()
-                    .clone(),
-                selected_item_index: store.get("directory", "selected_item_index")
-                    .downcast_ref::<usize>()
-                    .unwrap()
-                    .clone(),
-                selected_item: store.get("directory", "selected_item")
-                    .downcast_ref::<Option<DirectoryItem>>()
-                    .unwrap()
-                    .clone(),
-                parent_directory_list: store.get("directory", "parent_directory_list")
-                    .downcast_ref::<DirectoryList>()
-                    .unwrap()
-                    .clone(),
-                preview: store.get("directory", "preview")
-                    .downcast_ref::<String>()
-                    .unwrap()
-                    .clone(),
+                directory: store.get::<Directory>("directory", "directory"),
+                selected_item_index: store.get::<usize>("directory", "selected_item_index"),
+                selected_item: store.get::<Option<DirectoryItem>>("directory", "selected_item"),
+                parent_directory_list: store.get::<DirectoryList>("directory", "parent_directory_list"),
+                preview: store.get::<String>("directory", "preview"),
             },
             footer: FooterData {
-                current_command: store.get("command", "current_command")
-                    .downcast_ref::<Option<Command>>()
-                    .unwrap()
-                    .clone(),
-                input: store.get("command", "input")
-                    .downcast_ref::<String>()
-                    .unwrap()
-                    .clone(),
+                current_command: store.get::<Option<Command>>("command", "current_command"),
+                input: store.get::<String>("command", "input"),
             }
         }
     }
