@@ -65,33 +65,21 @@ impl Store {
 
     pub fn action(&mut self, store_key: &str, action: &str) {
         match store_key {
-            "command" => {
-                self.command.action(action);
-            },
-            "client" => {
-                self.client.action(action);
-            },
-            "directory" => {
-                self.directory.action(action);
-            }
+            "command" => self.command.action(action),
+            "client" => self.client.action(action),
+            "directory" => self.directory.action(action),
 
             _ => panic!("{}", Self::store_not_found(store_key)),
-        }
+        };
     }
 
     pub fn dispatch(&mut self, store_key: &str, action: &str, payload: Box<dyn Any>) {
         match store_key {
-            "command" => {
-                self.command.dispatch(action, payload);
-            },
-            "client" => {
-                self.client.dispatch(action, payload);
-            },
-            "directory" => {
-                self.directory.dispatch(action, payload);
-            },
+            "command" => self.command.dispatch(action, payload),
+            "client" => self.client.dispatch(action, payload),
+            "directory" => self.directory.dispatch(action, payload),
 
             _ => panic!("{}", Self::store_not_found(store_key)),
-        }
+        };
     }
 }
