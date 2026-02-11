@@ -23,7 +23,7 @@ pub struct Directory {
 pub type DirectoryList = Vec<Directory>;
 
 #[derive(Debug, Clone, PartialEq)]
-pub enum Action {
+pub enum Command {
     Copy,
     Move,
     Rename,

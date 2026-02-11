@@ -20,10 +20,14 @@ use ratatui::{
 
 mod layout;
 
-use crate::types::{
-    Action
+use crate::{
+    State,
+    Store,
+    types::{
+        Command
+    }
 };
-use crate::{ State };
+
 use layout::{
     header::{
         Header,
@@ -47,12 +51,14 @@ struct ViewModel {
 
 pub struct View {
     state: State,
+    store: Store,
 }
 
 impl View {
-    pub fn new(state: State) -> Self {
+    pub fn new(state: State, store: Store) -> Self {
         Self {
-            state
+            state,
+            store,
         }
     }
 
@@ -82,6 +88,7 @@ impl View {
     fn get_view_data(&self) -> ViewModel {
         let View {
             state,
+            store,
             ..
         } = self;
 
@@ -97,8 +104,11 @@ impl View {
                 preview: state.preview(),
             },
             footer: FooterData {
-                current_action: state.current_action(),
-                text_input: state.text_input(),
+                current_command: store.get("command", "current_command")
+                    .downcast_ref::<Option<Command>>()
+                    .unwrap()
+                    .clone(),
+                input: store.get("command", "input").downcast_ref::<String>().unwrap().clone(),
             }
         }
     }
@@ -107,16 +117,17 @@ impl View {
         if let Event::Key(key_event) = event::read()? {
             let View {
                 state,
+                store,
                 ..
             } = self;
 
             if KeyEventKind::Press == key_event.kind {
                 if key_event.modifiers.contains(KeyModifiers::ALT) {
                     match key_event.code {
-                        KeyCode::Char('1') => state.run_action(Action::Copy),
-                        KeyCode::Char('2') => state.run_action(Action::Move),
-                        KeyCode::Char('3') => state.run_action(Action::Rename),
-                        KeyCode::Char('4') => state.run_action(Action::Delete),
+                        KeyCode::Char('1') => store.dispatch("command", "run_command", Box::new(Command::Copy)),
+                        KeyCode::Char('2') => store.dispatch("command", "run_command", Box::new(Command::Move)),
+                        KeyCode::Char('3') => store.dispatch("command", "run_command", Box::new(Command::Rename)),
+                        KeyCode::Char('4') => store.dispatch("command", "run_command", Box::new(Command::Delete)),
                     
                         _ => {}
                     };
@@ -132,8 +143,8 @@ impl View {
                         KeyCode::Right => state.load_next_directory(),
                         KeyCode::Left => state.load_previous_directory(),
 
-                        KeyCode::Char(char) => state.type_text(char),
-                        KeyCode::Backspace => state.delete_text_last_char(),
+                        KeyCode::Char(char) => store.dispatch("command", "type_input", Box::new(char)),
+                        KeyCode::Backspace => store.dispatch("command", "delete_input_last_char", Box::new(())),
                     
                         _ => {}
                     };

@@ -3,7 +3,6 @@ use crate::types::{
     DirectoryItem,
     Directory,
     DirectoryList,
-    Action,
 };
 use crate::Api;
 
@@ -14,9 +13,7 @@ pub struct State {
     directory: Directory,
     selected_item_index: usize,
     parent_directory_list: DirectoryList,
-    text_input: String,
     preview: String,
-    current_action: Option<Action>,
 }
 
 impl State {
@@ -35,9 +32,7 @@ impl State {
             directory,
             selected_item_index: 0,
             parent_directory_list: Vec::new(),
-            text_input: String::new(),
             preview: String::new(),
-            current_action: None,
         };
         state.load_preview();
 
@@ -59,9 +54,6 @@ impl State {
     pub fn parent_directory_list(&self) -> DirectoryList {
         self.parent_directory_list.clone()
     }
-    pub fn text_input(&self) -> String {
-        self.text_input.clone()
-    }
     pub fn preview(&self) -> String {
         self.preview.clone()
     }
@@ -77,9 +69,6 @@ impl State {
         }
 
         Some(directory.content[*selected_item_index].clone())
-    }
-    pub fn current_action(&self) -> Option<Action> {
-        self.current_action.clone()
     }
 
     pub fn start(&mut self) {
@@ -108,20 +97,6 @@ impl State {
             self.update_selected_item_index(self.directory.content.len() - 1);
         } else {
             self.selected_item_index = 0;
-        }
-    }
-
-    pub fn run_action(&mut self, action: Action) {
-        match self.current_action.clone() {
-            Some(current_action) => {
-                if current_action == action {
-                    self.current_action = None;
-                }
-            },
-            None => {
-                self.clear_text();
-                self.current_action = Some(action);
-            }
         }
     }
 
@@ -179,20 +154,6 @@ impl State {
                 current_directory_path_name
             )
         };
-    }
-
-    pub fn clear_text(&mut self) {
-        self.text_input = String::new();
-    } 
-    pub fn type_text(&mut self, char: char) {
-        if !self.current_action.is_none() {
-            self.text_input.push(char);
-        }
-    }
-    pub fn delete_text_last_char(&mut self) {
-        if !self.text_input.is_empty() && !self.current_action.is_none() {
-            self.text_input.pop();
-        }
     }
 
     fn update_selected_item_index(&mut self, new_index: usize) {        

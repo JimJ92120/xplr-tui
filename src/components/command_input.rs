@@ -20,22 +20,22 @@ use ratatui::{
 };
 
 use crate::types::{
-    Action
+    Command
 };
 
 #[derive(Clone)]
-pub struct ActionInputData {
-    pub current_action: Option<Action>,
-    pub text_input: String,
+pub struct CommandInputData {
+    pub current_command: Option<Command>,
+    pub input: String,
 }
 
-pub struct ActionInput {
-    data: ActionInputData
+pub struct CommandInput {
+    data: CommandInputData
 }
 
-impl Widget for ActionInput {
+impl Widget for CommandInput {
     fn render(self, area: Rect, buffer: &mut Buffer) {
-        if self.data.current_action.is_none() {
+        if self.data.current_command.is_none() {
             return;
         }
 
@@ -44,19 +44,19 @@ impl Widget for ActionInput {
             Constraint::Length(1),
         ]).areas(area);
 
-        self.render_action_input(input_container, buffer);
+        self.render_command_input(input_container, buffer);
         self.render_confirmation_text(confirmation_container, buffer);
     }
 }
 
-impl ActionInput {
-    pub fn new(data: ActionInputData) -> Self {
+impl CommandInput {
+    pub fn new(data: CommandInputData) -> Self {
         Self {
             data
         }
     }
 
-    fn render_action_input(&self, area: Rect, buffer: &mut Buffer) {
+    fn render_command_input(&self, area: Rect, buffer: &mut Buffer) {
         Paragraph::new(Line::from(vec![
             self.get_input_label(),
             self.get_input_text(),
@@ -70,15 +70,15 @@ impl ActionInput {
     }
 
     fn get_input_text(&self) -> Span<'_> {
-        Span::styled(self.data.text_input.clone(), Style::new().fg(Color::Green))
+        Span::styled(self.data.input.clone(), Style::new().fg(Color::Green))
     }
 
     fn get_input_label(&self) -> Span<'_> {
-        let text = match self.data.current_action.clone().unwrap() {
-            Action::Copy => String::from("Copy to: "),
-            Action::Move => String::from("Move to: "),
-            Action::Rename => String::from("New name: "),
-            Action::Delete => String::from("Confirm: "),
+        let text = match self.data.current_command.clone().unwrap() {
+            Command::Copy => String::from("Copy to: "),
+            Command::Move => String::from("Move to: "),
+            Command::Rename => String::from("New name: "),
+            Command::Delete => String::from("Confirm: "),
         };
 
         Span::from(text)

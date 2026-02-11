@@ -10,10 +10,12 @@ mod components;
 mod api;
 mod view;
 mod state;
+mod store;
 
 use api::Api;
 use view::View;
 use state::State;
+use store::Store;
 
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
@@ -32,7 +34,9 @@ fn main() -> Result<()> {
         String::from("XPLR"),
         path_name.to_string()
     );
-    let mut view = View::new(state);
+    let store = Store::new();
+    println!("store: {:?}", store);
+    let mut view = View::new(state, store);
 
     println!("Starting...");
     sleep(Duration::from_secs(1));

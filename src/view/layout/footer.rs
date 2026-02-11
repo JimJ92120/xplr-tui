@@ -11,24 +11,24 @@ use ratatui::{
 };
 
 use crate::types::{
-    Action
+    Command
 };
 
 use crate::components::{
-    action_list::{
-        ActionList,
-        ActionListData,
+    command_list::{
+        CommandList,
+        CommandListData,
     },
-    action_input::{
-        ActionInput,
-        ActionInputData,
+    command_input::{
+        CommandInput,
+        CommandInputData,
     }
 };
 
 #[derive(Clone)]
 pub struct FooterData {
-    pub current_action: Option<Action>,
-    pub text_input: String
+    pub current_command: Option<Command>,
+    pub input: String
 }
 
 pub struct Footer {
@@ -38,23 +38,23 @@ pub struct Footer {
 impl Widget for Footer {
     fn render(self, area: Rect, buffer: &mut Buffer) {
         let FooterData {
-            current_action,
-            text_input,
+            current_command,
+            input,
         } = self.data.clone();
-        let [action_list_container, action_input_container] = Layout::vertical([
+        let [command_list_container, command_input_container] = Layout::vertical([
             Constraint::Length(1),
             Constraint::Length(2),
         ]).areas(area);
 
-        ActionList::new(ActionListData {
-            current_action: current_action.clone(),
+        CommandList::new(CommandListData {
+            current_command: current_command.clone(),
         })
-            .render(action_list_container, buffer);
-        ActionInput::new(ActionInputData {
-            current_action: current_action.clone(),
-            text_input: text_input.clone(),
+            .render(command_list_container, buffer);
+        CommandInput::new(CommandInputData {
+            current_command: current_command.clone(),
+            input: input.clone(),
         })
-            .render(action_input_container, buffer);
+            .render(command_input_container, buffer);
     }
 }
 
