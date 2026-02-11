@@ -21,10 +21,12 @@ use ratatui::{
 mod layout;
 
 use crate::{
-    State,
     Store,
     types::{
-        Command
+        Command,
+        Directory,
+        DirectoryItem,
+        DirectoryList,
     }
 };
 
@@ -50,14 +52,12 @@ struct ViewModel {
 }
 
 pub struct View {
-    state: State,
     store: Store,
 }
 
 impl View {
-    pub fn new(state: State, store: Store) -> Self {
+    pub fn new(store: Store) -> Self {
         Self {
-            state,
             store,
         }
     }
@@ -91,7 +91,6 @@ impl View {
 
     fn get_view_data(&self) -> ViewModel {
         let View {
-            state,
             store,
             ..
         } = self;
@@ -101,18 +100,36 @@ impl View {
                 title: String::from("XPLR"),
             },
             content: ContentData {
-                directory: state.directory(),
-                selected_item_index: state.selected_item_index(),
-                selected_item: state.selected_item(),
-                parent_directory_list: state.parent_directory_list(),
-                preview: state.preview(),
+                directory: store.get("directory", "directory")
+                    .downcast_ref::<Directory>()
+                    .unwrap()
+                    .clone(),
+                selected_item_index: store.get("directory", "selected_item_index")
+                    .downcast_ref::<usize>()
+                    .unwrap()
+                    .clone(),
+                selected_item: store.get("directory", "selected_item")
+                    .downcast_ref::<Option<DirectoryItem>>()
+                    .unwrap()
+                    .clone(),
+                parent_directory_list: store.get("directory", "parent_directory_list")
+                    .downcast_ref::<DirectoryList>()
+                    .unwrap()
+                    .clone(),
+                preview: store.get("directory", "preview")
+                    .downcast_ref::<String>()
+                    .unwrap()
+                    .clone(),
             },
             footer: FooterData {
                 current_command: store.get("command", "current_command")
                     .downcast_ref::<Option<Command>>()
                     .unwrap()
                     .clone(),
-                input: store.get("command", "input").downcast_ref::<String>().unwrap().clone(),
+                input: store.get("command", "input")
+                    .downcast_ref::<String>()
+                    .unwrap()
+                    .clone(),
             }
         }
     }
@@ -120,7 +137,6 @@ impl View {
     fn event_callback(&mut self) -> Result<()> {
         if let Event::Key(key_event) = event::read()? {
             let View {
-                state,
                 store,
                 ..
             } = self;
@@ -139,13 +155,13 @@ impl View {
                     match key_event.code {
                         KeyCode::Esc => store.action("client", "stop"),
 
-                        KeyCode::Up => state.select_previous_item(),
-                        KeyCode::Down => state.select_next_item(),
-                        KeyCode::PageUp => state.select_first_item(),
-                        KeyCode::PageDown => state.select_last_item(),
+                        KeyCode::Up => store.action("directory", "select_previous_item"),
+                        KeyCode::Down => store.action("directory", "select_next_item"),
+                        KeyCode::PageUp => store.action("directory", "select_first_item"),
+                        KeyCode::PageDown => store.action("directory", "select_last_item"),
 
-                        KeyCode::Right => state.load_next_directory(),
-                        KeyCode::Left => state.load_previous_directory(),
+                        KeyCode::Right => store.action("directory", "load_next_directory"),
+                        KeyCode::Left => store.action("directory", "load_previous_directory"),
 
                         KeyCode::Char(char) => store.dispatch("command", "type_input", Box::new(char)),
                         KeyCode::Backspace => store.action("command", "delete_input_last_char"),

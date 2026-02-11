@@ -7,14 +7,11 @@ use std::{
 
 mod types;
 mod components;
-mod api;
+
 mod view;
-mod state;
 mod store;
 
-use api::Api;
 use view::View;
-use state::State;
 use store::Store;
 
 fn main() -> Result<()> {
@@ -31,10 +28,7 @@ fn main() -> Result<()> {
     };
 
     let mut view = View::new(
-        State::new(
-            path_name.to_string()
-        ),
-        Store::new()
+        Store::new(path_name.to_string())
     );
 
     println!("Starting...");

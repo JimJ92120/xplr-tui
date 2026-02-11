@@ -1,53 +1,77 @@
+use std::any::Any;
+
 use crate::types::{
     DirectoryItemType,
     DirectoryItem,
     Directory,
     DirectoryList,
 };
-use crate::Api;
 
-#[derive(Clone)]
-pub struct State {
+use super::{
+    NestedStore,
+};
+
+mod controller;
+
+use controller::{
+    DirectoryController,
+};
+
+#[derive(Debug, Clone)]
+pub struct DirectoryStore {
     directory: Directory,
     selected_item_index: usize,
     parent_directory_list: DirectoryList,
     preview: String,
 }
 
-impl State {
-    pub fn new(
-        path_name: String,
-    ) -> Self {
-        let directory_path_name = Api::get_root_directory_path_name(path_name.clone())
-            .expect(&format!("Unable to initialize State with '{}' path name", path_name));
-        let directory = Api::get_directory(directory_path_name.clone())
-            .expect(&format!("Unable to initialize State with '{}' directory name", directory_path_name));
+impl NestedStore for DirectoryStore {
+    fn get(&self, field: &str) -> Box<dyn Any> {
+        match field {
+            "directory" => Box::new(self.directory.clone()),
+            "selected_item_index" => Box::new(self.selected_item_index.clone()),
+            "selected_item" => Box::new(self.selected_item()),
+            "parent_directory_list" => Box::new(self.parent_directory_list.clone()),
+            "preview" => Box::new(self.preview.clone()),
 
-        let mut state = Self {
-            directory,
+            _ => panic!("{}", Self::no_field_found(field)),
+        }
+    }
+
+    fn action(&mut self, action: &str) {
+        match action {
+            "select_previous_item" => self.select_previous_item(),
+            "select_next_item" => self.select_next_item(),
+            "select_first_item" => self.select_first_item(),
+            "select_last_item" => self.select_last_item(),
+            "load_next_directory" => self.load_next_directory(),
+            "load_previous_directory" => self.load_previous_directory(),
+
+            _ => panic!("{}", Self::no_action_found(action)),
+        };
+    }
+}
+
+impl DirectoryStore {
+    pub fn new(path_name: String) -> Self {
+        let root_directory_path_name = DirectoryController::get_root_directory_path_name(path_name.clone())
+            .expect(&format!("Unable to initialize Store with '{}' path name", path_name));
+        let root_directory = DirectoryController::get_directory(root_directory_path_name.clone())
+            .expect(&format!("Unable to initialize Store with '{}' directory name", root_directory_path_name));
+
+        let mut store = Self {
+            directory: root_directory,
             selected_item_index: 0,
             parent_directory_list: Vec::new(),
             preview: String::new(),
         };
-        state.load_preview();
+        store.load_preview();
 
-        state
+        store
     }
 
-    pub fn directory(&self) -> Directory {
-        self.directory.clone()
-    }
-    pub fn selected_item_index(&self) -> usize {
-        self.selected_item_index.clone()
-    }
-    pub fn parent_directory_list(&self) -> DirectoryList {
-        self.parent_directory_list.clone()
-    }
-    pub fn preview(&self) -> String {
-        self.preview.clone()
-    }
-    pub fn selected_item(&self) -> Option<DirectoryItem> {
-        let State {
+    fn selected_item(&self) -> Option<DirectoryItem> {
+        let Self {
             directory,
             selected_item_index,
             ..
@@ -60,20 +84,34 @@ impl State {
         Some(directory.content[*selected_item_index].clone())
     }
 
-    pub fn select_next_item(&mut self) {
+    fn update_selected_item_index(&mut self, new_index: usize) {        
+        // bound to check before calling to avoid unnecessary checks at runtime
+        self.selected_item_index = new_index;
+        self.clear_preview();
+
+        match self.selected_item() {
+            Some(item) => {
+                if DirectoryItemType::File == item.item_type {
+                    self.load_preview();
+                }
+            },
+            None => ()
+        }
+    }
+    fn select_next_item(&mut self) {
         if self.selected_item_index < self.directory.content.len() - 1 {
             self.update_selected_item_index(self.selected_item_index + 1);
         }
     }
-    pub fn select_previous_item(&mut self) {
+    fn select_previous_item(&mut self) {
         if self.selected_item_index > 0 {
             self.update_selected_item_index(self.selected_item_index - 1);
         }
     }
-    pub fn select_first_item(&mut self) {
+    fn select_first_item(&mut self) {
         self.update_selected_item_index(0);
     }
-    pub fn select_last_item(&mut self) {
+    fn select_last_item(&mut self) {
         if !self.directory.content.is_empty() {
             self.update_selected_item_index(self.directory.content.len() - 1);
         } else {
@@ -81,8 +119,8 @@ impl State {
         }
     }
 
-    pub fn load_next_directory(&mut self) {
-        let State {
+    fn load_next_directory(&mut self) {
+        let Self {
             directory,
             ..
         } = self.clone();
@@ -91,7 +129,7 @@ impl State {
             Some(selected_item) => {
                 if DirectoryItemType::Directory == selected_item.item_type {
                     let next_directory_path_name = selected_item.path_name.clone();
-                    let next_directory = Api::get_directory(next_directory_path_name.clone());
+                    let next_directory = DirectoryController::get_directory(next_directory_path_name.clone());
 
                     match next_directory {
                         Ok(next_directory) => {
@@ -107,8 +145,8 @@ impl State {
             None => ()
         }
     }
-    pub fn load_previous_directory(&mut self) {
-        let State {
+    fn load_previous_directory(&mut self) {
+        let Self {
             directory,
             parent_directory_list,
             ..
@@ -137,21 +175,6 @@ impl State {
         };
     }
 
-    fn update_selected_item_index(&mut self, new_index: usize) {        
-        // bound to check before calling to avoid unnecessary checks at runtime
-        self.selected_item_index = new_index;
-        self.clear_preview();
-
-        match self.selected_item() {
-            Some(item) => {
-                if DirectoryItemType::File == item.item_type {
-                    self.load_preview();
-                }
-            },
-            None => ()
-        }
-    }
-
     fn clear_preview(&mut self) {
         self.preview = String::new()
     }
@@ -164,7 +187,7 @@ impl State {
 
         let selected_item = selected_item.unwrap();
         if DirectoryItemType::File == selected_item.item_type {
-            self.preview = Api::get_file_content(selected_item.path_name.clone()).expect(
+            self.preview = DirectoryController::get_file_content(selected_item.path_name.clone()).expect(
                 &format!("'{}' is not a file.", selected_item.path_name)
             );
         }

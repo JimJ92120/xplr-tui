@@ -12,9 +12,9 @@ use crate::types::{
     Directory,
 };
 
-pub struct Api {}
+pub struct DirectoryController {}
 
-impl Api {
+impl DirectoryController {
     pub fn get_root_directory_path_name(path_name: String) -> Result<String> {
         let current_directory = env::current_dir().unwrap();
         let mut directory_path_name = current_directory.display().to_string();
