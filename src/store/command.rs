@@ -22,10 +22,16 @@ impl NestedStore for CommandStore {
             "current_command" => Box::new(self.current_command.clone()),
             "input" => Box::new(self.input.clone()),
 
-            _ => panic!("key not found"),
+            _ => panic!("{}", Self::no_field_found(field)),
         }
+    }
 
-        // Box::new(result)
+    fn action(&mut self, action: &str) {
+        match action {
+            "delete_input_last_char" => self.delete_input_last_char(),
+
+            _ => panic!("{}", Self::no_action_found(action)),
+        };
     }
 
     fn dispatch(&mut self, action: &str, payload: Box<dyn Any>) {
@@ -33,13 +39,11 @@ impl NestedStore for CommandStore {
             "type_input" => self.type_input(
                 *payload.downcast_ref::<char>().unwrap()
             ),
-            "clear_input" => self.clear_input(),
-            "delete_input_last_char" => self.delete_input_last_char(),
             "run_command" => self.run_command(
                 payload.downcast_ref::<Command>().unwrap().clone()
             ),
 
-            _ => panic!("action not found"),
+            _ => panic!("{}", Self::no_action_found(action)),
         };
     }
 }

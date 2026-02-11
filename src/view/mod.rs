@@ -64,7 +64,7 @@ impl View {
 
     pub fn run(&mut self) -> Result<()> {
         ratatui::run(|terminal: &mut DefaultTerminal| -> Result<()> {
-            self.store.dispatch("client", "start", Box::new(()));
+            self.store.action("client", "start");
 
             while self.store.get("client", "is_running")
                 .downcast_ref::<bool>()
@@ -137,7 +137,7 @@ impl View {
                     };
                 } else {
                     match key_event.code {
-                        KeyCode::Esc => store.dispatch("client", "stop", Box::new(())),
+                        KeyCode::Esc => store.action("client", "stop"),
 
                         KeyCode::Up => state.select_previous_item(),
                         KeyCode::Down => state.select_next_item(),
@@ -148,7 +148,7 @@ impl View {
                         KeyCode::Left => state.load_previous_directory(),
 
                         KeyCode::Char(char) => store.dispatch("command", "type_input", Box::new(char)),
-                        KeyCode::Backspace => store.dispatch("command", "delete_input_last_char", Box::new(())),
+                        KeyCode::Backspace => store.action("command", "delete_input_last_char"),
                     
                         _ => {}
                     };

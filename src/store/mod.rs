@@ -13,8 +13,20 @@ use client::{
 pub trait NestedStore {
     fn get(&self, field: &str) -> Box<dyn Any>;
 
+    fn action(&mut self, action: &str) {
+        println!("action: {}", action);
+    }
+
     fn dispatch(&mut self, action: &str, payload: Box<dyn Any>) {
         println!("action: {}\npayload: {:?}", action, payload);
+    }
+
+    fn no_field_found(field: &str) -> String {
+        format!("Field '{}' not found", field)
+    }
+
+    fn no_action_found(action: &str) -> String {
+        format!("Action '{}' not found", action)
     }
 }
 
@@ -35,6 +47,19 @@ impl Store {
         match store_key {
             "command" => self.command.clone().get(field),
             "client" => self.client.clone().get(field),
+
+            _ => panic!("store not found"),
+        }
+    }
+
+    pub fn action(&mut self, store_key: &str, action: &str) {
+        match store_key {
+            "command" => {
+                self.command.action(action);
+            },
+            "client" => {
+                self.client.action(action);
+            },
 
             _ => panic!("store not found"),
         }

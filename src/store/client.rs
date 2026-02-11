@@ -11,21 +11,19 @@ pub struct ClientStore {
 
 impl NestedStore for ClientStore {
     fn get(&self, field: &str) -> Box<dyn Any> {
-        let result = match field {
-            "is_running" => self.is_running.clone(),
+        match field {
+            "is_running" => Box::new(self.is_running.clone()),
 
-            _ => panic!("key not found"),
-        };
-
-        Box::new(result)
+            _ => panic!("{}", Self::no_field_found(field)),
+        }
     }
 
-    fn dispatch(&mut self, action: &str, _payload: Box<dyn Any>) {
+    fn action(&mut self, action: &str) {
         match action {
             "start" => self.start(),
             "stop" => self.stop(),
 
-            _ => panic!("action not found"),
+            _ => panic!("{}", Self::no_action_found(action)),
         };
     }
 }
