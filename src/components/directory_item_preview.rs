@@ -1,7 +1,7 @@
 use ratatui::{
     buffer::{ Buffer },
     layout::{ Rect },
-    widgets::{ Widget, Paragraph }
+    widgets::{ Widget, Paragraph, Block, BorderType }
 };
 
 use crate::{
@@ -22,11 +22,17 @@ impl Widget for DirectoryItemPreview {
     fn render(self, area: Rect, buffer: &mut Buffer) {
         if DirectoryItemType::File != self.data.selected_item.item_type {
             return;
-        } else if "" == self.data.preview {
-            self.render_no_preview(area, buffer);
-        } else {
-            self.render_preview(area, buffer);
         }
+        
+        let content = if "" == self.data.preview {
+            self.get_no_preview()
+        } else {
+            self.get_preview()
+        };
+
+        content
+            .block(self.get_container())
+            .render(area, buffer);
     }
 }
 
@@ -37,13 +43,17 @@ impl DirectoryItemPreview {
         }
     }
 
-    fn render_no_preview(&self, area: Rect, buffer: &mut Buffer) {
-        Paragraph::new("\nNo preview available.")
-            .render(area, buffer);
+    fn get_container(&self) -> Block<'_> {
+        Block::bordered()
+            .border_type(BorderType::Rounded)
+            .title("Preview")
     }
 
-    fn render_preview(&self, area: Rect, buffer: &mut Buffer) {
-        Paragraph::new(format!("\nPreview:\n{}", self.data.preview))
-            .render(area, buffer);
+    fn get_no_preview(&self) -> Paragraph<'_> {
+        Paragraph::new("No preview available.")
+    }
+
+    fn get_preview(&self) -> Paragraph<'_> {
+        Paragraph::new(self.data.preview.clone())
     }
 }
