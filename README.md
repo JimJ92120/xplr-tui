@@ -22,6 +22,7 @@ Following use cases may throw errors as not implemented:
 
 - permissions
 - logs, error messages to avoid `panic!`
+- directory and large file compression on copy and move
 
 #### to do
 
