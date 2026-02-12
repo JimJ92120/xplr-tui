@@ -75,22 +75,22 @@ impl Store {
     }
 
     fn get_nested_store(&self, store_key: &str) -> Box<&dyn NestedStore> {
-        match store_key {
-            "command" => Box::new(&self.command),
-            "client" => Box::new(&self.client),
-            "directory" => Box::new(&self.directory),
+        Box::new(match store_key {
+            "command" => &self.command,
+            "client" => &self.client,
+            "directory" => &self.directory,
 
             _ => panic!("{}", Self::store_not_found(store_key)),
-        }
+        })
     }
 
     fn get_nested_store_mut(&mut self, store_key: &str) -> Box<&mut dyn NestedStore> {
-        match store_key {
-            "command" => Box::new(&mut self.command),
-            "client" => Box::new(&mut self.client),
-            "directory" => Box::new(&mut self.directory),
+        Box::new(match store_key {
+            "command" => &mut self.command,
+            "client" => &mut self.client,
+            "directory" => &mut self.directory,
 
             _ => panic!("{}", Self::store_not_found(store_key)),
-        }
+        })
     }
 }
