@@ -48,7 +48,7 @@ impl CommandInput {
     }
 
     fn render_confirmation_text(&self, area: Rect, buffer: &mut Buffer) {
-        Paragraph::new("Press [Enter] to confirm")
+        Paragraph::new("Press [Enter] to execute")
             .render(area, buffer);
     }
 
@@ -58,9 +58,9 @@ impl CommandInput {
 
     fn get_input_label(&self) -> Span<'_> {
         let text = match self.data.current_command.clone() {
-            Some(Command::Copy) => String::from("Copy to: "),
-            Some(Command::Move) => String::from("Move to: "),
-            Some(Command::Delete) => String::from("Confirm: "),
+            Some(Command::Copy) => String::from("Enter path: "),
+            Some(Command::Move) => String::from("Enter path: "),
+            Some(Command::Delete) => String::from("Type 'yes' to confirm: "),
 
             _ => String::new(),
         };
