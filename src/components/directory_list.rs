@@ -7,7 +7,7 @@ use ratatui::{
 };
 
 use crate::{
-    types::{ Directory, DirectoryItem }
+    types::{ Directory, DirectoryItem, DirectoryItemType }
 };
 
 #[derive(Clone)]
@@ -65,7 +65,12 @@ impl DirectoryContent {
     }
 
     fn get_list_item(&self, item: DirectoryItem, index: usize) -> Line<'_> {
-        let line = Line::from(format!("{}.{}", index, item.path_name));
+        let item_content = if DirectoryItemType::Directory == item.item_type {
+            format!("{}/", item.name)
+        } else {
+            item.name
+        };
+        let line = Line::from(item_content);
 
         if self.data.selected_item_index == index {
             return line.bg(Color::Green);
