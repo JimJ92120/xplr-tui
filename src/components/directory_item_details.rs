@@ -2,7 +2,7 @@ use ratatui::{
     buffer::{ Buffer },
     layout::{ Rect },
     text::{ Line },
-    widgets::{ Widget, Paragraph }
+    widgets::{ Widget, Paragraph, Block, BorderType }
 };
 
 use crate::{
@@ -32,7 +32,12 @@ impl DirectoryItemDetails {
     }
 
     fn render_details(&self, area: Rect, buffer: &mut Buffer) {
+        let container = Block::bordered()
+            .border_type(BorderType::Rounded)
+            .title("Details");
+
         Paragraph::new(self.get_details())
+            .block(container)
             .render(area, buffer);
     }
     
@@ -43,16 +48,9 @@ impl DirectoryItemDetails {
         } = self.data.clone();
 
         vec![
-            Line::from("Details:"),
-            Line::from(format!(
-                "- name: {}",
-                selected_item.name
-            )),
-            Line::from(format!(
-                "- type: {:?}",
-                selected_item.item_type
-            )),
-            Line::from(""),
+            Line::from(format!("path: {}", selected_item.path_name)),
+            Line::from(format!("name: {}", selected_item.name)),
+            Line::from(format!("type: {:?}", selected_item.item_type)),
         ]
     }
 }

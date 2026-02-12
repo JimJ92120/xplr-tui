@@ -77,7 +77,7 @@ impl Content {
                     ..
                 } = self.data.clone();
                 let [details_container, preview_container] = Layout::vertical([
-                    Constraint::Length(3),
+                    Constraint::Length(5),
                     Constraint::Fill(1),
                 ]).areas(area);
 
