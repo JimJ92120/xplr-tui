@@ -121,13 +121,13 @@ impl View {
                     match key_event.code {
                         KeyCode::Esc => store.action(StoreType::Client, "stop"),
 
-                        KeyCode::Up => store.action(StoreType::Directory, "select_previous_item"),
-                        KeyCode::Down => store.action(StoreType::Directory, "select_next_item"),
-                        KeyCode::PageUp => store.action(StoreType::Directory, "select_first_item"),
-                        KeyCode::PageDown => store.action(StoreType::Directory, "select_last_item"),
+                        KeyCode::Up => store.action(StoreType::Directory, "previous_item"),
+                        KeyCode::Down => store.action(StoreType::Directory, "next_item"),
+                        KeyCode::PageUp => store.action(StoreType::Directory, "first_item"),
+                        KeyCode::PageDown => store.action(StoreType::Directory, "last_item"),
 
-                        KeyCode::Right => store.action(StoreType::Directory, "load_next_directory"),
-                        KeyCode::Left => store.action(StoreType::Directory, "load_previous_directory"),
+                        KeyCode::Right => store.action(StoreType::Directory, "next_directory"),
+                        KeyCode::Left => store.action(StoreType::Directory, "previous_directory"),
 
                         KeyCode::Char(char) => store.dispatch(StoreType::Command, "type", Box::new(char)),
                         KeyCode::Backspace => store.action(StoreType::Command, "pop_input"),
@@ -164,8 +164,7 @@ impl View {
                                 _ => (),
                             };
 
-                            store.action(StoreType::Directory, "refresh_directory");
-
+                            store.action(StoreType::Directory, "refresh");
                         },
                     
                         _ => {}

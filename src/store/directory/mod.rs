@@ -37,13 +37,13 @@ impl NestedStore for DirectoryStore {
 
     fn action(&mut self, action: &str) {
         match action {
-            "select_previous_item" => self.select_previous_item(),
-            "select_next_item" => self.select_next_item(),
-            "select_first_item" => self.select_first_item(),
-            "select_last_item" => self.select_last_item(),
-            "load_next_directory" => self.load_next_directory(),
-            "load_previous_directory" => self.load_previous_directory(),
-            "refresh_directory" => self.refresh_directory(),
+            "previous_item" => self.select_previous_item(),
+            "next_item" => self.select_next_item(),
+            "first_item" => self.select_first_item(),
+            "last_item" => self.select_last_item(),
+            "next_directory" => self.load_next_directory(),
+            "previous_directory" => self.load_previous_directory(),
+            "refresh" => self.refresh_directory(),
 
             _ => panic!("{}", self.no_action_found(action)),
         };
