@@ -14,7 +14,7 @@ impl NestedStore for ClientStore {
         match field {
             "is_running" => Box::new(self.is_running.clone()),
 
-            _ => panic!("{}", Self::no_field_found(field)),
+            _ => panic!("{}", self.no_field_found(field)),
         }
     }
 
@@ -23,7 +23,7 @@ impl NestedStore for ClientStore {
             "start" => self.start(),
             "stop" => self.stop(),
 
-            _ => panic!("{}", Self::no_action_found(action)),
+            _ => panic!("{}", self.no_action_found(action)),
         };
     }
 }

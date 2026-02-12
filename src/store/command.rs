@@ -22,7 +22,7 @@ impl NestedStore for CommandStore {
             "current_command" => Box::new(self.current_command.clone()),
             "input" => Box::new(self.input.clone()),
 
-            _ => panic!("{}", Self::no_field_found(field)),
+            _ => panic!("{}", self.no_field_found(field)),
         }
     }
 
@@ -30,7 +30,7 @@ impl NestedStore for CommandStore {
         match action {
             "delete_input_last_char" => self.delete_input_last_char(),
 
-            _ => panic!("{}", Self::no_action_found(action)),
+            _ => panic!("{}", self.no_action_found(action)),
         };
     }
 
@@ -43,7 +43,7 @@ impl NestedStore for CommandStore {
                 payload.downcast_ref::<Command>().unwrap().clone()
             ),
 
-            _ => panic!("{}", Self::no_action_found(action)),
+            _ => panic!("{}", self.no_action_found(action)),
         };
     }
 }

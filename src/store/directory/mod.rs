@@ -34,7 +34,7 @@ impl NestedStore for DirectoryStore {
             "parent_directory_list" => Box::new(self.parent_directory_list.clone()),
             "preview" => Box::new(self.preview.clone()),
 
-            _ => panic!("{}", Self::no_field_found(field)),
+            _ => panic!("{}", self.no_field_found(field)),
         }
     }
 
@@ -47,7 +47,7 @@ impl NestedStore for DirectoryStore {
             "load_next_directory" => self.load_next_directory(),
             "load_previous_directory" => self.load_previous_directory(),
 
-            _ => panic!("{}", Self::no_action_found(action)),
+            _ => panic!("{}", self.no_action_found(action)),
         };
     }
 }
