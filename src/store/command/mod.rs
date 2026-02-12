@@ -49,7 +49,7 @@ impl NestedStore for CommandStore {
             "run" => self.run_command(
                 payload.downcast_ref::<Command>().unwrap().clone()
             ),
-            "copy" => self.copy_file(
+            "copy" => self.copy_file_or_directory(
                 payload.downcast_ref::<String>().unwrap().clone()
             ),
             "move" => self.move_file_or_directory(
@@ -107,14 +107,14 @@ impl CommandStore {
         self.prompt = String::new();
     }
 
-    fn copy_file(&mut self, source_path_name: String) {
+    fn copy_file_or_directory(&mut self, source_path_name: String) {
         // caller to match self.current_command
         if "" == self.input {
             return;
         }
 
         let target_path_name = self.input.clone();
-        let _ = CommandController::copy_file(
+        let _ = CommandController::copy_file_or_directory(
             source_path_name.clone(),
             target_path_name.clone()
         );
