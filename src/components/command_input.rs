@@ -35,10 +35,6 @@ pub struct CommandInput {
 
 impl Widget for CommandInput {
     fn render(self, area: Rect, buffer: &mut Buffer) {
-        if self.data.current_command.is_none() {
-            return;
-        }
-
         let [input_container, confirmation_container] = Layout::vertical([
             Constraint::Length(1),
             Constraint::Length(1),
@@ -74,11 +70,13 @@ impl CommandInput {
     }
 
     fn get_input_label(&self) -> Span<'_> {
-        let text = match self.data.current_command.clone().unwrap() {
-            Command::Copy => String::from("Copy to: "),
-            Command::Move => String::from("Move to: "),
-            Command::Rename => String::from("New name: "),
-            Command::Delete => String::from("Confirm: "),
+        let text = match self.data.current_command.clone() {
+            Some(Command::Copy) => String::from("Copy to: "),
+            Some(Command::Move) => String::from("Move to: "),
+            Some(Command::Rename) => String::from("New name: "),
+            Some(Command::Delete) => String::from("Confirm: "),
+
+            _ => String::new(),
         };
 
         Span::from(text)

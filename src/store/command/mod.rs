@@ -20,6 +20,7 @@ use controller::{
 pub struct CommandStore {
     current_command: Option<Command>,
     input: String,
+    prompt: String,
 }
 
 impl NestedStore for CommandStore {
@@ -27,6 +28,7 @@ impl NestedStore for CommandStore {
         match field {
             "current_command" => Box::new(self.current_command.clone()),
             "input" => Box::new(self.input.clone()),
+            "prompt" => Box::new(self.prompt.clone()),
 
             _ => panic!("{}", self.no_field_found(field)),
         }
@@ -35,6 +37,7 @@ impl NestedStore for CommandStore {
     fn action(&mut self, action: &str) {
         match action {
             "delete_input_last_char" => self.delete_input_last_char(),
+            "clear_prompt" => self.clear_prompt(),
 
             _ => panic!("{}", self.no_action_found(action)),
         };
@@ -62,15 +65,20 @@ impl CommandStore {
     pub fn new() -> Self {
         Self {
             current_command: None,
-            input: String::from(""),
+            input: String::new(),
+            prompt: String::new()
         }
     }
     
     fn type_input(&mut self, char: char) {
-        self.input.push(char);
+        if !self.current_command.is_none() {
+            self.input.push(char);
+        }
     }
     fn delete_input_last_char(&mut self) {
-        if !self.input.is_empty() {
+        if !self.current_command.is_none()
+            && !self.input.is_empty()
+        {
             self.input.pop();
         }
     }
@@ -92,6 +100,10 @@ impl CommandStore {
         }
     }
 
+    fn clear_prompt(&mut self) {
+        self.prompt = String::new();
+    }
+
     fn copy_file(&mut self, source_path_name: String) {
         match self.current_command {
             Some(Command::Copy) => {
@@ -106,7 +118,8 @@ impl CommandStore {
                 );
 
                 self.current_command = None;
-                self.input = format!(
+                self.input = String::new();
+                self.prompt = format!(
                     "Copied '{}' to '{}'.",
                     source_path_name,
                     target_path_name,

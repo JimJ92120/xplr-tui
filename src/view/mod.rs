@@ -106,6 +106,7 @@ impl View {
             footer: FooterData {
                 current_command: store.get::<Option<Command>>("command", "current_command"),
                 input: store.get::<String>("command", "input"),
+                prompt: store.get::<String>("command", "prompt"),
             }
         }
     }
@@ -118,6 +119,10 @@ impl View {
             } = self;
 
             if KeyEventKind::Press == key_event.kind {
+                if !store.get::<String>("command", "prompt").is_empty() {
+                    store.action("command", "clear_prompt");
+                }                
+
                 if key_event.modifiers.contains(KeyModifiers::ALT) {
                     match key_event.code {
                         KeyCode::Char('1') => store.dispatch("command", "run_command", Box::new(Command::Copy)),
