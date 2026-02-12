@@ -17,6 +17,12 @@ use directory::{
     DirectoryStore
 };
 
+pub enum StoreType {
+    Command,
+    Client,
+    Directory,
+}
+
 pub trait NestedStore {
     fn get(&self, field: &str) -> Box<dyn Any>;
 
@@ -52,49 +58,41 @@ impl Store {
         }
     }
 
-    fn store_not_found(store_key: &str) -> String {
-        format!("'{}' store not found.", store_key)
-    }
-
     // prevent using `get_nested_store_mut` for getters with e.g:
     // fn get_value(&mut self) {
     //   self.store.get("store_key", "field")
     // }
-    pub fn get<T: Clone + 'static>(&self, store_key: &str, field: &str) -> T {
-        self.get_nested_store(store_key)
+    pub fn get<T: Clone + 'static>(&self, store_type: StoreType, field: &str) -> T {
+        self.get_nested_store(store_type)
             .get(field)
             .downcast_ref::<T>()
             .unwrap()
             .clone()
     }
 
-    pub fn action(&mut self, store_key: &str, action: &str) {
-        self.get_nested_store_mut(store_key)
+    pub fn action(&mut self, store_type: StoreType, action: &str) {
+        self.get_nested_store_mut(store_type)
             .action(action);
     }
 
-    pub fn dispatch(&mut self, store_key: &str, action: &str, payload: Box<dyn Any>) {
-        self.get_nested_store_mut(store_key)
+    pub fn dispatch(&mut self, store_type: StoreType, action: &str, payload: Box<dyn Any>) {
+        self.get_nested_store_mut(store_type)
             .dispatch(action, payload)
     }
 
-    fn get_nested_store(&self, store_key: &str) -> Box<&dyn NestedStore> {
-        Box::new(match store_key {
-            "command" => &self.command,
-            "client" => &self.client,
-            "directory" => &self.directory,
-
-            _ => panic!("{}", Self::store_not_found(store_key)),
+    fn get_nested_store(&self, store_type: StoreType) -> Box<&dyn NestedStore> {
+        Box::new(match store_type {
+            StoreType::Command => &self.command,
+            StoreType::Client => &self.client,
+            StoreType::Directory => &self.directory,
         })
     }
 
-    fn get_nested_store_mut(&mut self, store_key: &str) -> Box<&mut dyn NestedStore> {
-        Box::new(match store_key {
-            "command" => &mut self.command,
-            "client" => &mut self.client,
-            "directory" => &mut self.directory,
-
-            _ => panic!("{}", Self::store_not_found(store_key)),
+    fn get_nested_store_mut(&mut self, store_type: StoreType) -> Box<&mut dyn NestedStore> {
+        Box::new(match store_type {
+            StoreType::Command => &mut self.command,
+            StoreType::Client => &mut self.client,
+            StoreType::Directory => &mut self.directory,
         })
     }
 }

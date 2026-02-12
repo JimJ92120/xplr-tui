@@ -21,7 +21,10 @@ use ratatui::{
 mod layout;
 
 use crate::{
-    Store,
+    store::{
+        Store,
+        StoreType,
+    },
     types::{
         Command,
         Directory,
@@ -64,9 +67,9 @@ impl View {
 
     pub fn run(&mut self) -> Result<()> {
         ratatui::run(|terminal: &mut DefaultTerminal| -> Result<()> {
-            self.store.action("client", "start");
+            self.store.action(StoreType::Client, "start");
 
-            while self.store.get::<bool>("client", "is_running")
+            while self.store.get::<bool>(StoreType::Client, "is_running")
             {
                 terminal.draw(|frame| self.render(frame))?;
 
@@ -97,16 +100,16 @@ impl View {
                 title: String::from("XPLR"),
             },
             content: ContentData {
-                directory: store.get::<Directory>("directory", "directory"),
-                selected_item_index: store.get::<usize>("directory", "selected_item_index"),
-                selected_item: store.get::<Option<DirectoryItem>>("directory", "selected_item"),
-                parent_directory_list: store.get::<DirectoryList>("directory", "parent_directory_list"),
-                preview: store.get::<String>("directory", "preview"),
+                directory: store.get::<Directory>(StoreType::Directory, "directory"),
+                selected_item_index: store.get::<usize>(StoreType::Directory, "selected_item_index"),
+                selected_item: store.get::<Option<DirectoryItem>>(StoreType::Directory, "selected_item"),
+                parent_directory_list: store.get::<DirectoryList>(StoreType::Directory, "parent_directory_list"),
+                preview: store.get::<String>(StoreType::Directory, "preview"),
             },
             footer: FooterData {
-                current_command: store.get::<Option<Command>>("command", "current_command"),
-                input: store.get::<String>("command", "input"),
-                prompt: store.get::<String>("command", "prompt"),
+                current_command: store.get::<Option<Command>>(StoreType::Command, "current_command"),
+                input: store.get::<String>(StoreType::Command, "input"),
+                prompt: store.get::<String>(StoreType::Command, "prompt"),
             }
         }
     }
@@ -119,40 +122,40 @@ impl View {
             } = self;
 
             if KeyEventKind::Press == key_event.kind {
-                if !store.get::<String>("command", "prompt").is_empty() {
-                    store.action("command", "clear_prompt");
+                if !store.get::<String>(StoreType::Command, "prompt").is_empty() {
+                    store.action(StoreType::Command, "clear_prompt");
                 }                
 
                 if key_event.modifiers.contains(KeyModifiers::ALT) {
                     match key_event.code {
-                        KeyCode::Char('1') => store.dispatch("command", "run_command", Box::new(Command::Copy)),
-                        KeyCode::Char('2') => store.dispatch("command", "run_command", Box::new(Command::Move)),
-                        KeyCode::Char('3') => store.dispatch("command", "run_command", Box::new(Command::Rename)),
-                        KeyCode::Char('4') => store.dispatch("command", "run_command", Box::new(Command::Delete)),
+                        KeyCode::Char('1') => store.dispatch(StoreType::Command, "run_command", Box::new(Command::Copy)),
+                        KeyCode::Char('2') => store.dispatch(StoreType::Command, "run_command", Box::new(Command::Move)),
+                        KeyCode::Char('3') => store.dispatch(StoreType::Command, "run_command", Box::new(Command::Rename)),
+                        KeyCode::Char('4') => store.dispatch(StoreType::Command, "run_command", Box::new(Command::Delete)),
                     
                         _ => {}
                     };
                 } else {
                     match key_event.code {
-                        KeyCode::Esc => store.action("client", "stop"),
+                        KeyCode::Esc => store.action(StoreType::Client, "stop"),
 
-                        KeyCode::Up => store.action("directory", "select_previous_item"),
-                        KeyCode::Down => store.action("directory", "select_next_item"),
-                        KeyCode::PageUp => store.action("directory", "select_first_item"),
-                        KeyCode::PageDown => store.action("directory", "select_last_item"),
+                        KeyCode::Up => store.action(StoreType::Directory, "select_previous_item"),
+                        KeyCode::Down => store.action(StoreType::Directory, "select_next_item"),
+                        KeyCode::PageUp => store.action(StoreType::Directory, "select_first_item"),
+                        KeyCode::PageDown => store.action(StoreType::Directory, "select_last_item"),
 
-                        KeyCode::Right => store.action("directory", "load_next_directory"),
-                        KeyCode::Left => store.action("directory", "load_previous_directory"),
+                        KeyCode::Right => store.action(StoreType::Directory, "load_next_directory"),
+                        KeyCode::Left => store.action(StoreType::Directory, "load_previous_directory"),
 
-                        KeyCode::Char(char) => store.dispatch("command", "type_input", Box::new(char)),
-                        KeyCode::Backspace => store.action("command", "delete_input_last_char"),
+                        KeyCode::Char(char) => store.dispatch(StoreType::Command, "type_input", Box::new(char)),
+                        KeyCode::Backspace => store.action(StoreType::Command, "delete_input_last_char"),
 
                         KeyCode::Enter => store.dispatch(
-                            "command",
+                            StoreType::Command,
                             "copy_file",
                             Box::new(
                                 store
-                                    .get::<Option<DirectoryItem>>("directory", "selected_item")
+                                    .get::<Option<DirectoryItem>>(StoreType::Directory, "selected_item")
                                     .expect("No item selected to copy.")
                                     .path_name
                             )
