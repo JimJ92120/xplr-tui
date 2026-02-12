@@ -22,13 +22,12 @@ A file manager TUI in `rust`.
 Following use cases may throw errors as not implemented:
 
 - permissions
-- logs, error messages
+- logs, error messages to avoid `panic!`
 
 #### to do
 
 - search files content and directory content to match names
 - sort items
-- commands workflow to copy, move, rename and delete items (only rendering with placeholder)
 - load new directory from a path
 
 ---
