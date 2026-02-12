@@ -82,11 +82,12 @@ impl DirectoryContent {
 
     fn scroll_value(&self, container_height: u16) -> u16 {
         let selected_item_index = self.data.selected_item_index.clone() as u16;
+        let box_offset: u16 = 2;
 
-        if selected_item_index < container_height {
+        if selected_item_index < container_height - box_offset {
             0
         } else {
-            selected_item_index - container_height + 3
+            selected_item_index + box_offset + 1 - container_height
         }
     }
 
