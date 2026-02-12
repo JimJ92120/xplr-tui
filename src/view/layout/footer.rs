@@ -1,31 +1,15 @@
 use ratatui::{
-    buffer::Buffer,
-    layout::{
-        Constraint,
-        Layout,
-        Rect
-    },
-    widgets::{
-        Widget,
-    }
+    buffer::{ Buffer },
+    layout::{ Constraint, Layout, Rect },
+    widgets::{ Widget }
 };
 
-use crate::types::{
-    Command
-};
-
-use crate::components::{
-    command_list::{
-        CommandList,
-        CommandListData,
-    },
-    command_input::{
-        CommandInput,
-        CommandInputData,
-    },
-    command_prompt::{
-        CommandPrompt,
-        CommandPromptData,
+use crate::{
+    types::{ Command },
+    components::{
+        command_list::{ CommandList, CommandListData },
+        command_input::{ CommandInput, CommandInputData },
+        command_prompt::{ CommandPrompt, CommandPromptData }
     }
 };
 

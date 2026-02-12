@@ -1,8 +1,8 @@
-use std::any::Any;
-
-use super::{
-    NestedStore,
+use std::{
+    any::{ Any },
 };
+
+use super::{ NestedStore };
 
 #[derive(Debug, Clone)]
 pub struct ClientStore {

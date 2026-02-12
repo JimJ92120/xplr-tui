@@ -1,17 +1,11 @@
 use ratatui::{
-    buffer::Buffer,
-    layout::{
-        Rect
-    },
-    widgets::{
-        Widget,
-        Paragraph
-    },
+    buffer::{ Buffer },
+    layout::{ Rect },
+    widgets::{ Widget, Paragraph }
 };
 
-use crate::types::{
-    Directory,
-    DirectoryList,
+use crate::{
+    types::{ Directory, DirectoryList }
 };
 
 #[derive(Clone)]

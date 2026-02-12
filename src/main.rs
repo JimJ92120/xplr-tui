@@ -11,8 +11,8 @@ mod components;
 mod view;
 mod store;
 
-use view::View;
-use store::Store;
+use view::{ View };
+use store::{ Store };
 
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();

@@ -1,10 +1,7 @@
 use ratatui::{
-    buffer::Buffer,
+    buffer::{ Buffer },
     layout::{ Rect },
-    widgets::{
-        Widget,
-        Paragraph
-    }
+    widgets::{ Widget, Paragraph }
 };
 
 pub struct HeaderData {

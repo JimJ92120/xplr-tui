@@ -1,51 +1,34 @@
-use std::io::{ Result };
+use std::{
+    io::{ Result }
+};
 use ratatui::{
     DefaultTerminal,
     Frame,
-    buffer::Buffer,
+    buffer::{ Buffer },
     widgets::{ Widget },
-    layout::{
-        Constraint,
-        Layout,
-        Rect
-    },
-    crossterm::event::{
-        self,
-        Event,
-        KeyCode,
-        KeyEventKind,
-        KeyModifiers,
+    layout::{ Constraint, Layout, Rect },
+    crossterm::{
+        event::{
+            self,
+            Event,
+            KeyCode,
+            KeyEventKind,
+            KeyModifiers,
+        }
     }
 };
 
 mod layout;
 
 use crate::{
-    store::{
-        Store,
-        StoreType,
-    },
-    types::{
-        Command,
-        Directory,
-        DirectoryItem,
-        DirectoryList,
-    }
+    store::{ Store, StoreType },
+    types::{ Command, Directory, DirectoryItem, DirectoryList }
 };
 
 use layout::{
-    header::{
-        Header,
-        HeaderData
-    },
-    content::{
-        Content,
-        ContentData
-    },
-    footer::{
-        Footer,
-        FooterData
-    }
+    header::{ Header, HeaderData },
+    content::{ Content, ContentData },
+    footer::{ Footer, FooterData }
 };
 
 struct ViewModel {

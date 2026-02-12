@@ -1,12 +1,7 @@
 use ratatui::{
-    buffer::Buffer,
-    layout::{
-        Rect
-    },
-    widgets::{
-        Widget,
-        Paragraph,
-    },
+    buffer::{ Buffer },
+    layout::{ Rect },
+    widgets::{ Widget, Paragraph }
 };
 
 #[derive(Clone)]

@@ -1,14 +1,12 @@
-use std::any::Any;
+use std::{
+    any::{ Any },
+};
 
 use crate::{
-    types::{
-        Command,
-    }
+    types::{ Command }
 };
 
-use super::{
-    NestedStore,
-};
+use super::{ NestedStore };
 
 mod controller;
 

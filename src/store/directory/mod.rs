@@ -1,15 +1,12 @@
-use std::any::Any;
-
-use crate::types::{
-    DirectoryItemType,
-    DirectoryItem,
-    Directory,
-    DirectoryList,
+use std::{
+    any::{ Any },
 };
 
-use super::{
-    NestedStore,
+use crate::{
+    types::{ DirectoryItemType, DirectoryItem, Directory, DirectoryList }
 };
+
+use super::{ NestedStore };
 
 mod controller;
 

@@ -5,11 +5,8 @@ use std::{
     path::{ Path }
 };
 
-use crate::types::{
-    DirectoryItemType,
-    DirectoryItem,
-    DirectoryContent,
-    Directory,
+use crate::{
+    types::{ DirectoryItemType, DirectoryItem, Directory, DirectoryContent }
 };
 
 pub struct DirectoryController {}

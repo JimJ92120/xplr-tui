@@ -1,26 +1,13 @@
 use ratatui::{
-    buffer::Buffer,
-    layout::{
-        Constraint,
-        Layout,
-        Rect
-    },
-    text::{
-        Span,
-        Line,
-    },
-    widgets::{
-        Widget,
-        Paragraph,
-    },
-    style::{
-        Style,
-        Color,
-    }
+    buffer:: { Buffer },
+    layout::{ Constraint, Layout, Rect },
+    text::{ Line, Span },
+    widgets::{ Widget, Paragraph },
+    style::{ Style, Color }
 };
 
-use crate::types::{
-    Command
+use crate::{
+    types::{ Command }
 };
 
 #[derive(Clone)]

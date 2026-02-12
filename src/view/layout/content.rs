@@ -1,37 +1,16 @@
 use ratatui::{
-    buffer::Buffer,
-    layout::{
-        Constraint,
-        Layout,
-        Rect
-    },
-    widgets::{
-        Widget,
-        Paragraph
-    },
+    buffer::{ Buffer },
+    layout::{ Constraint, Layout, Rect },
+    widgets::{ Widget, Paragraph }
 };
 
-use crate::types::{
-    DirectoryItem,
-    Directory,
-    DirectoryList,
-};
-use crate::components::{
-    directory_list::{
-        DirectoryContent,
-        DirectoryContentData
-    },
-    parent_directory_list::{
-        ParentDirectoryList,
-        ParentDirectoryListData,
-    },
-    directory_item_details::{
-        DirectoryItemDetails,
-        DirectoryItemDetailsData
-    },
-    directory_item_preview::{
-        DirectoryItemPreview,
-        DirectoryItemPreviewData
+use crate::{
+    types::{ DirectoryItem, Directory, DirectoryList },
+    components::{
+        directory_list::{ DirectoryContent, DirectoryContentData },
+        parent_directory_list::{ ParentDirectoryList, ParentDirectoryListData },
+        directory_item_details::{ DirectoryItemDetails, DirectoryItemDetailsData },
+        directory_item_preview::{ DirectoryItemPreview, DirectoryItemPreviewData }
     }
 };
 

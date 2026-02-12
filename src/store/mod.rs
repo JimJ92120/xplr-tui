@@ -1,21 +1,15 @@
 use std::{
-    any::Any,
-    clone::Clone
+    any::{ Any },
+    clone::{ Clone },
 };
 
 mod command;
 mod client;
 mod directory;
 
-use command::{
-    CommandStore,
-};
-use client::{
-    ClientStore,
-};
-use directory::{
-    DirectoryStore
-};
+use command::{ CommandStore };
+use client::{ ClientStore };
+use directory::{ DirectoryStore };
 
 pub enum StoreType {
     Command,
