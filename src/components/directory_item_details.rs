@@ -2,12 +2,14 @@ use ratatui::{
     buffer::{ Buffer },
     layout::{ Rect },
     text::{ Line },
-    widgets::{ Widget, Paragraph, Block, BorderType }
+    widgets::{ Widget, Paragraph }
 };
 
 use crate::{
     types::{ DirectoryItem }
 };
+
+use super::base;
 
 #[derive(Clone)]
 pub struct DirectoryItemDetailsData {
@@ -21,7 +23,7 @@ pub struct DirectoryItemDetails {
 impl Widget for DirectoryItemDetails {
     fn render(self, area: Rect, buffer: &mut Buffer) {
         self.get_details()
-            .block(self.get_container())
+            .block(base::box_container(String::from("Details")))
             .render(area, buffer);
     }
 }
@@ -31,12 +33,6 @@ impl DirectoryItemDetails {
         Self {
             data
         }
-    }
-
-    fn get_container(&self) -> Block<'_> {
-        Block::bordered()
-            .border_type(BorderType::Rounded)
-            .title(" Details ")
     }
     
     fn get_details(&self) -> Paragraph<'_> {

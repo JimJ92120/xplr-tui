@@ -4,6 +4,12 @@ use ratatui::{
     widgets::{ Widget, Paragraph }
 };
 
+use crate::{
+    components::{
+        base
+    }
+};
+
 pub struct HeaderData {
     pub title: String,
 }
@@ -14,7 +20,11 @@ pub struct Header {
 
 impl Widget for Header {
     fn render(self, area: Rect, buffer: &mut Buffer) {
-        self.render_title(area, buffer);
+        let container = base::box_container(self.data.title);
+
+        Paragraph::new("Use ▲ ▼ to select an item and ◄ ► to navigate directories")
+            .block(container)
+            .render(area, buffer);
     }
 }
 
@@ -23,10 +33,5 @@ impl Header {
         Self {
             data
         }
-    }
-
-    fn render_title(&self, area: Rect, buffer: &mut Buffer) {
-        Paragraph::new(format!("{}", self.data.title))
-            .render(area, buffer);
     }
 }

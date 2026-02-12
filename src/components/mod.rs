@@ -1,3 +1,5 @@
+pub mod base;
+
 pub mod directory_content;
 pub mod directory_item_details;
 pub mod directory_item_preview;

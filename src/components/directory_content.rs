@@ -2,13 +2,15 @@ use ratatui::{
     buffer:: { Buffer },
     layout::{ Rect },
     text::{ Line },
-    widgets::{ Widget, Paragraph, Block, BorderType },
+    widgets::{ Widget, Paragraph },
     style::{ Color, Stylize }
 };
 
 use crate::{
     types::{ Directory, DirectoryItem, DirectoryItemType, DirectoryList }
 };
+
+use super::base;
 
 #[derive(Clone)]
 pub struct DirectoryContentData {
@@ -36,7 +38,7 @@ impl Widget for DirectoryContent {
         };
 
         list
-            .block(self.get_container(title))
+            .block(base::box_container(title))
             .scroll((self.scroll_value(area.height), 0))
             .render(area, buffer);
     }
@@ -47,12 +49,6 @@ impl DirectoryContent {
         Self {
             data
         }
-    }
-
-    fn get_container(&self, title: String) -> Block<'_> {
-        Block::bordered()
-            .border_type(BorderType::Rounded)
-            .title(format!(" {} ", title))
     }
 
     fn get_no_list(&self) -> Paragraph<'_> {

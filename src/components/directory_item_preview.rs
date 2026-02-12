@@ -1,12 +1,14 @@
 use ratatui::{
     buffer::{ Buffer },
     layout::{ Rect },
-    widgets::{ Widget, Paragraph, Block, BorderType }
+    widgets::{ Widget, Paragraph }
 };
 
 use crate::{
-    types::{ DirectoryItem, DirectoryItemType }
+    types::{ DirectoryItem, DirectoryItemType },
 };
+
+use super::base;
 
 #[derive(Clone)]
 pub struct DirectoryItemPreviewData {
@@ -31,7 +33,7 @@ impl Widget for DirectoryItemPreview {
         };
 
         preview
-            .block(self.get_container())
+            .block(base::box_container(String::from("Preview")))
             .render(area, buffer);
     }
 }
@@ -41,12 +43,6 @@ impl DirectoryItemPreview {
         Self {
             data
         }
-    }
-
-    fn get_container(&self) -> Block<'_> {
-        Block::bordered()
-            .border_type(BorderType::Rounded)
-            .title(" Preview ")
     }
 
     fn get_no_preview(&self) -> Paragraph<'_> {

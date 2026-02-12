@@ -44,7 +44,7 @@ pub struct View {
 impl Widget for &mut View {
     fn render(self, area: Rect, buffer: &mut Buffer) {
         let [header_container, container_container, footer_container] = Layout::vertical([
-            Constraint::Length(2),
+            Constraint::Length(3),
             Constraint::Fill(1),
             Constraint::Length(3),
         ]).areas(area);
