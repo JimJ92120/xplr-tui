@@ -13,9 +13,8 @@ A file manager TUI in `rust`.
 3. if the selected item is a directory, use `ARROW_RIGHT` to view its content, `ARROW_LEFT` to go back to the previous directory
 4. use `ALT + $NUMBER` to start a command (copy, move, rename, delete), cancel action with same `ALT + $NUMBER` combination (workflow not implemented)
    - copy: `ALT + 1`
-   - rename: `ALT + 2`
-   - move: `ALT + 3`
-   - delete: `ALT + 4`
+   - move: `ALT + 2`
+   - delete: `ALT + 3`
 
 #### not implemented
 
