@@ -57,7 +57,7 @@ impl CommandList {
         if !current_command.is_none()
             && current_command.unwrap() == command
         {
-            return Span::styled(text, Style::new().fg(Color::Green));
+            return Span::styled(text, Style::new().bg(Color::Green));
         }
 
         Span::from(text)
