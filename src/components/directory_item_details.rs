@@ -20,7 +20,9 @@ pub struct DirectoryItemDetails {
 
 impl Widget for DirectoryItemDetails {
     fn render(self, area: Rect, buffer: &mut Buffer) {
-        self.render_details(area, buffer)
+        self.get_details()
+            .block(self.get_container())
+            .render(area, buffer);
     }
 }
 
@@ -31,26 +33,22 @@ impl DirectoryItemDetails {
         }
     }
 
-    fn render_details(&self, area: Rect, buffer: &mut Buffer) {
-        let container = Block::bordered()
+    fn get_container(&self) -> Block<'_> {
+        Block::bordered()
             .border_type(BorderType::Rounded)
-            .title("Details");
-
-        Paragraph::new(self.get_details())
-            .block(container)
-            .render(area, buffer);
+            .title("Details")
     }
     
-    fn get_details(&self) -> Vec<Line<'static>> {
+    fn get_details(&self) -> Paragraph<'_> {
         let DirectoryItemDetailsData {
             selected_item,
             ..
         } = self.data.clone();
 
-        vec![
+        Paragraph::new(vec![
             Line::from(format!("path: {}", selected_item.path_name)),
             Line::from(format!("name: {}", selected_item.name)),
             Line::from(format!("type: {:?}", selected_item.item_type)),
-        ]
+        ])
     }
 }
