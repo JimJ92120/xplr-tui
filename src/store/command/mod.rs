@@ -152,6 +152,10 @@ impl CommandStore {
 
     fn delete_file_or_directory(&mut self, source_path_name: String) {
         // caller to match self.current_command
+        if "yes" != self.input {
+            return;
+        }
+
         let _ = CommandController::delete_file_or_directory(
             source_path_name.clone(),
         );
