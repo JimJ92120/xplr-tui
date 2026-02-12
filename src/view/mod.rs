@@ -141,6 +141,17 @@ impl View {
 
                         KeyCode::Char(char) => store.dispatch("command", "type_input", Box::new(char)),
                         KeyCode::Backspace => store.action("command", "delete_input_last_char"),
+
+                        KeyCode::Enter => store.dispatch(
+                            "command",
+                            "copy_file",
+                            Box::new(
+                                store
+                                    .get::<Option<DirectoryItem>>("directory", "selected_item")
+                                    .expect("No item selected to copy.")
+                                    .path_name
+                            )
+                        ),
                     
                         _ => {}
                     };
