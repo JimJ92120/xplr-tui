@@ -52,6 +52,7 @@ impl Content {
             parent_directory_list,
             ..
         } = self.data.clone();
+
         DirectoryContent::new(DirectoryContentData {
             selected_item_index: selected_item_index.clone(),
             current_directory: current_directory.clone(),
