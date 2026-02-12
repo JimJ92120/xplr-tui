@@ -26,6 +26,5 @@ pub type DirectoryList = Vec<Directory>;
 pub enum Command {
     Copy,
     Move,
-    Rename,
     Delete,
 }

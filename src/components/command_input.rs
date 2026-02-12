@@ -60,7 +60,6 @@ impl CommandInput {
         let text = match self.data.current_command.clone() {
             Some(Command::Copy) => String::from("Copy to: "),
             Some(Command::Move) => String::from("Move to: "),
-            Some(Command::Rename) => String::from("New name: "),
             Some(Command::Delete) => String::from("Confirm: "),
 
             _ => String::new(),

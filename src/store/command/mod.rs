@@ -49,10 +49,12 @@ impl NestedStore for CommandStore {
             "run_command" => self.run_command(
                 payload.downcast_ref::<Command>().unwrap().clone()
             ),
-            "copy_file" => self.copy_file(
+            "copy" => self.copy_file(
                 payload.downcast_ref::<String>().unwrap().clone()
             ),
-
+            "move" => self.move_file_or_directory(
+                payload.downcast_ref::<String>().unwrap().clone()
+            ),
 
             _ => panic!("{}", self.no_action_found(action)),
         };
@@ -103,28 +105,45 @@ impl CommandStore {
     }
 
     fn copy_file(&mut self, source_path_name: String) {
-        match self.current_command {
-            Some(Command::Copy) => {
-                if "" == self.input {
-                    return;
-                }
+        // caller to match self.current_command
+        if "" == self.input {
+            return;
+        }
 
-                let target_path_name = self.input.clone();
-                let _ = CommandController::copy_file(
-                    source_path_name.clone(),
-                    target_path_name.clone()
-                );
+        let target_path_name = self.input.clone();
+        let _ = CommandController::copy_file(
+            source_path_name.clone(),
+            target_path_name.clone()
+        );
 
-                self.current_command = None;
-                self.input = String::new();
-                self.prompt = format!(
-                    "Copied '{}' to '{}'.",
-                    source_path_name,
-                    target_path_name,
-                );
-            },
+        self.current_command = None;
+        self.input = String::new();
+        self.prompt = format!(
+            "Copied '{}' to '{}'.",
+            source_path_name,
+            target_path_name,
+        );
+    }
 
-            _ => (),
-        } 
+    // keyword `move` is reserver
+    fn move_file_or_directory(&mut self, source_path_name: String) {
+        // caller to match self.current_command
+        if "" == self.input {
+            return;
+        }
+
+        let new_name = self.input.clone();
+        let _ = CommandController::move_file_or_directory(
+            source_path_name.clone(),
+            new_name.clone()
+        );
+
+        self.current_command = None;
+        self.input = String::new();
+        self.prompt = format!(
+            "Moved '{}' to '{}'.",
+            source_path_name,
+            new_name,
+        ); 
     }
 }

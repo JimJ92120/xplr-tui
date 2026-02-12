@@ -113,7 +113,6 @@ impl View {
                     match key_event.code {
                         KeyCode::Char('1') => store.dispatch(StoreType::Command, "run_command", Box::new(Command::Copy)),
                         KeyCode::Char('2') => store.dispatch(StoreType::Command, "run_command", Box::new(Command::Move)),
-                        KeyCode::Char('3') => store.dispatch(StoreType::Command, "run_command", Box::new(Command::Rename)),
                         KeyCode::Char('4') => store.dispatch(StoreType::Command, "run_command", Box::new(Command::Delete)),
                     
                         _ => {}
@@ -133,16 +132,29 @@ impl View {
                         KeyCode::Char(char) => store.dispatch(StoreType::Command, "type_input", Box::new(char)),
                         KeyCode::Backspace => store.action(StoreType::Command, "delete_input_last_char"),
 
-                        KeyCode::Enter => store.dispatch(
-                            StoreType::Command,
-                            "copy_file",
-                            Box::new(
-                                store
-                                    .get::<Option<DirectoryItem>>(StoreType::Directory, "selected_item")
-                                    .expect("No item selected to copy.")
-                                    .path_name
-                            )
-                        ),
+                        KeyCode::Enter => {
+                            // possibly move logic as to Store::CommandStore
+                            // e.g CommandStore.execute(command, payload)
+                            let current_command = store.get::<Option<Command>>(StoreType::Command, "current_command");
+                            let selected_item = store
+                                .get::<Option<DirectoryItem>>(StoreType::Directory, "selected_item")
+                                .expect("No item selected to copy.");
+
+                            match current_command {
+                                Some(Command::Copy) => store.dispatch(
+                                    StoreType::Command,
+                                    "copy",
+                                    Box::new(selected_item.path_name)
+                                ),
+                                Some(Command::Move) => store.dispatch(
+                                    StoreType::Command,
+                                    "move",
+                                    Box::new(selected_item.path_name)
+                                ),
+
+                                _ => ()
+                            }
+                        },
                     
                         _ => {}
                     };

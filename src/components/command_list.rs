@@ -36,8 +36,7 @@ impl CommandList {
         let command_list: Vec<(Command, String)> = vec![
             (Command::Copy, String::from("[ ALT+1: copy ]")),
             (Command::Move, String::from("[ ALT+2: move ]")),
-            (Command::Rename, String::from("[ ALT+3: rename ]")),
-            (Command::Delete, String::from("[ ALT+4: delete ]")),
+            (Command::Delete, String::from("[ ALT+3: delete ]")),
         ];
 
         Paragraph::new(Line::from(
