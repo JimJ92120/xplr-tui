@@ -90,7 +90,7 @@ impl DirectoryContent {
         if selected_item_index < container_height {
             0
         } else {
-            selected_item_index - container_height + 1
+            selected_item_index - container_height + 3
         }
     }
 
