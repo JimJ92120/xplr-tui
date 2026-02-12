@@ -7,8 +7,7 @@ use ratatui::{
 use crate::{
     types::{ DirectoryItem, Directory, DirectoryList },
     components::{
-        directory_list::{ DirectoryContent, DirectoryContentData },
-        parent_directory_list::{ ParentDirectoryList, ParentDirectoryListData },
+        directory_content::{ DirectoryContent, DirectoryContentData },
         directory_item_details::{ DirectoryItemDetails, DirectoryItemDetailsData },
         directory_item_preview::{ DirectoryItemPreview, DirectoryItemPreviewData }
     }
@@ -16,7 +15,7 @@ use crate::{
 
 #[derive(Clone)]
 pub struct ContentData {
-    pub directory: Directory,
+    pub current_directory: Directory,
     pub selected_item_index: usize,
     pub selected_item: Option<DirectoryItem>,
     pub parent_directory_list: DirectoryList,
@@ -47,21 +46,18 @@ impl Content {
     }
 
     fn render_left_container(&self, area: Rect, buffer: &mut Buffer) {
-        let [title_container, list_container] = Layout::vertical([
-            Constraint::Length(2),
-            Constraint::Fill(1),
-        ]).areas(area);
-
-        ParentDirectoryList::new(ParentDirectoryListData {
-            current_directory: self.data.directory.clone(),
-            parent_directory_list: self.data.parent_directory_list.clone(),
-        })
-            .render(title_container, buffer);
+        let ContentData {
+            selected_item_index,
+            current_directory,
+            parent_directory_list,
+            ..
+        } = self.data.clone();
         DirectoryContent::new(DirectoryContentData {
-            directory: self.data.directory.clone(),
-            selected_item_index: self.data.selected_item_index.clone(),
+            selected_item_index: selected_item_index.clone(),
+            current_directory: current_directory.clone(),
+            parent_directory_list: parent_directory_list.clone(),
         })
-            .render(list_container, buffer);
+            .render(area, buffer);
     }
 
     fn render_right_container(&self, area: Rect, buffer: &mut Buffer) {

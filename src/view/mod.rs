@@ -41,6 +41,24 @@ pub struct View {
     store: Store,
 }
 
+impl Widget for &mut View {
+    fn render(self, area: Rect, buffer: &mut Buffer) {
+        let [header_container, container_container, footer_container] = Layout::vertical([
+            Constraint::Length(2),
+            Constraint::Fill(1),
+            Constraint::Length(3),
+        ]).areas(area);
+        let ViewModel { header, content, footer } = self.data();
+        
+        Header::new(header)
+            .render(header_container, buffer);
+        Content::new(content)
+            .render(container_container, buffer);
+        Footer::new(footer)
+            .render(footer_container, buffer);
+    }
+}
+
 impl View {
     pub fn new(store: Store) -> Self {
         Self {
@@ -83,7 +101,7 @@ impl View {
                 title: String::from("XPLR"),
             },
             content: ContentData {
-                directory: store.get::<Directory>(StoreType::Directory, "directory"),
+                current_directory: store.get::<Directory>(StoreType::Directory, "directory"),
                 selected_item_index: store.get::<usize>(StoreType::Directory, "selected_item_index"),
                 selected_item: store.get::<Option<DirectoryItem>>(StoreType::Directory, "selected_item"),
                 parent_directory_list: store.get::<DirectoryList>(StoreType::Directory, "parent_directory_list"),
@@ -174,23 +192,5 @@ impl View {
         };
 
         Ok(())
-    }
-}
-
-impl Widget for &mut View {
-    fn render(self, area: Rect, buffer: &mut Buffer) {
-        let [header_container, container_container, footer_container] = Layout::vertical([
-            Constraint::Length(2),
-            Constraint::Fill(1),
-            Constraint::Length(3),
-        ]).areas(area);
-        let ViewModel { header, content, footer } = self.data();
-        
-        Header::new(header)
-            .render(header_container, buffer);
-        Content::new(content)
-            .render(container_container, buffer);
-        Footer::new(footer)
-            .render(footer_container, buffer);
     }
 }

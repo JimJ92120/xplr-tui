@@ -1,7 +1,7 @@
 use ratatui::{
     buffer::{ Buffer },
     layout::{ Rect },
-    widgets::{ Widget, Paragraph }
+    widgets::{ Widget, Block, BorderType }
 };
 
 use crate::{
@@ -20,11 +20,17 @@ pub struct ParentDirectoryList {
 
 impl Widget for ParentDirectoryList {
     fn render(self, area: Rect, buffer: &mut Buffer) {
-        if self.data.parent_directory_list.is_empty() {
-            self.render_no_list(area, buffer);
+        let content = if self.data.parent_directory_list.is_empty() {
+            self.get_no_list()
         } else {
-            self.render_parent_directory_list(area, buffer);
-        }
+            self.get_parent_directory_list()
+        };
+
+        Block::new()
+            .border_type(BorderType::Rounded)
+            // .borders(Borders::TOP)
+            .title(content)
+            .render(area, buffer)
     }
 }
 
@@ -35,14 +41,8 @@ impl ParentDirectoryList {
         }
     }
 
-    fn render_no_list(&self, area: Rect, buffer: &mut Buffer) {
-        Paragraph::new(self.data.current_directory.path_name.clone())
-            .render(area, buffer);
-    }
-
-    fn render_parent_directory_list(&self, area: Rect, buffer: &mut Buffer) {
-        Paragraph::new(self.get_parent_directory_list())
-            .render(area, buffer);
+    fn get_no_list(&self) -> String {
+        self.data.current_directory.path_name.clone()
     }
 
     fn get_parent_directory_list(&self) -> String {
