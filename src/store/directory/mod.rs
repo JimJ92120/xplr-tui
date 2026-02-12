@@ -43,6 +43,7 @@ impl NestedStore for DirectoryStore {
             "select_last_item" => self.select_last_item(),
             "load_next_directory" => self.load_next_directory(),
             "load_previous_directory" => self.load_previous_directory(),
+            "refresh_directory" => self.refresh_directory(),
 
             _ => panic!("{}", self.no_action_found(action)),
         };
@@ -112,7 +113,7 @@ impl DirectoryStore {
         if !self.directory.content.is_empty() {
             self.update_selected_item_index(self.directory.content.len() - 1);
         } else {
-            self.selected_item_index = 0;
+            self.update_selected_item_index(0);
         }
     }
 
@@ -126,9 +127,8 @@ impl DirectoryStore {
             Some(selected_item) => {
                 if DirectoryItemType::Directory == selected_item.item_type {
                     let next_directory_path_name = selected_item.path_name.clone();
-                    let next_directory = DirectoryController::get_directory(next_directory_path_name.clone());
 
-                    match next_directory {
+                    match DirectoryController::get_directory(next_directory_path_name.clone()) {
                         Ok(next_directory) => {
                             self.parent_directory_list.push(directory.clone());
                             self.directory = next_directory.clone();
@@ -170,6 +170,20 @@ impl DirectoryStore {
                 current_directory_path_name
             )
         };
+    }
+    fn refresh_directory(&mut self) {
+        let Self {
+            directory,
+            ..
+        } = self.clone();
+
+        match DirectoryController::get_directory(directory.path_name.clone()) {
+            Ok(current_directory) => {
+                self.directory = current_directory;
+                self.select_first_item();
+            },
+            Err(error) => panic!("Unable to refresh content for '{}' directory.\n{}", directory.path_name, error)
+        }
     }
 
     fn clear_preview(&mut self) {

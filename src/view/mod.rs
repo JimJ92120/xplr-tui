@@ -136,6 +136,10 @@ impl View {
                             // possibly move logic as to Store::CommandStore
                             // e.g CommandStore.execute(command, payload)
                             let current_command = store.get::<Option<Command>>(StoreType::Command, "current_command");
+                            if current_command.is_none() {
+                                return Ok(());
+                            }
+
                             let selected_item = store
                                 .get::<Option<DirectoryItem>>(StoreType::Directory, "selected_item")
                                 .expect("No item selected to copy.");
@@ -152,8 +156,13 @@ impl View {
                                     Box::new(selected_item.path_name)
                                 ),
 
-                                _ => ()
-                            }
+                                Some(Command::Delete) => (),
+
+                                _ => (),
+                            };
+
+                            store.action(StoreType::Directory, "refresh_directory");
+
                         },
                     
                         _ => {}
