@@ -27,8 +27,10 @@ impl Widget for CommandInput {
             Constraint::Length(1),
         ]).areas(area);
 
-        self.render_command_input(input_container, buffer);
-        self.render_confirmation_text(confirmation_container, buffer);
+        self.get_input()
+            .render(input_container, buffer);
+        self.get_confirmation()
+            .render(confirmation_container, buffer);
     }
 }
 
@@ -39,24 +41,22 @@ impl CommandInput {
         }
     }
 
-    fn render_command_input(&self, area: Rect, buffer: &mut Buffer) {
+    fn get_input(&self) -> Paragraph<'_> {
         Paragraph::new(Line::from(vec![
-            self.get_input_label(),
-            self.get_input_text(),
+            self.input_label(),
+            self.input_text(),
         ]))
-            .render(area, buffer);
     }
 
-    fn render_confirmation_text(&self, area: Rect, buffer: &mut Buffer) {
+    fn get_confirmation(&self) -> Paragraph<'_> {
         Paragraph::new("Press [Enter] to execute")
-            .render(area, buffer);
     }
 
-    fn get_input_text(&self) -> Span<'_> {
+    fn input_text(&self) -> Span<'_> {
         Span::styled(self.data.input.clone(), Style::new().fg(Color::Green))
     }
 
-    fn get_input_label(&self) -> Span<'_> {
+    fn input_label(&self) -> Span<'_> {
         let text = match self.data.current_command.clone() {
             Some(Command::Copy) => String::from("Enter path: "),
             Some(Command::Move) => String::from("Enter path: "),

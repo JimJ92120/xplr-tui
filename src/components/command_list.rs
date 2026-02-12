@@ -21,7 +21,8 @@ pub struct CommandList {
 
 impl Widget for CommandList {
     fn render(self, area: Rect, buffer: &mut Buffer) {
-        self.render_command_list(area, buffer);
+        self.get_command_list()
+            .render(area, buffer);
     }
 }
 
@@ -32,7 +33,7 @@ impl CommandList {
         }
     }
 
-    fn render_command_list(&self, area: Rect, buffer: &mut Buffer) {
+    fn get_command_list(&self) -> Paragraph<'_> {
         let command_list: Vec<(Command, String)> = vec![
             (Command::Copy, String::from("[ ALT+1: copy ]")),
             (Command::Move, String::from("[ ALT+2: move ]")),
@@ -45,7 +46,6 @@ impl CommandList {
                 .map(|(command, text)| self.get_list_item(command.clone(), text.clone()))
                 .collect::<Vec<_>>()
         ))
-            .render(area, buffer);
     }
 
     fn get_list_item(&self, command: Command, text: String) -> Span<'_> {
