@@ -24,13 +24,13 @@ impl Widget for DirectoryItemPreview {
             return;
         }
         
-        let content = if "" == self.data.preview {
+        let preview = if "" == self.data.preview {
             self.get_no_preview()
         } else {
             self.get_preview()
         };
 
-        content
+        preview
             .block(self.get_container())
             .render(area, buffer);
     }

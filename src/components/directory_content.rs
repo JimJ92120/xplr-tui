@@ -23,7 +23,7 @@ pub struct DirectoryContent {
 
 impl Widget for DirectoryContent {
     fn render(self, area: Rect, buffer: &mut Buffer) {
-        let list_content = if self.data.current_directory.content.is_empty() {
+        let list = if self.data.current_directory.content.is_empty() {
             self.get_no_list()
         } else {
             self.get_list()
@@ -35,7 +35,7 @@ impl Widget for DirectoryContent {
             self.parent_directory_list()
         };
 
-        list_content
+        list
             .block(self.get_container(title))
             .scroll((self.scroll_value(area.height), 0))
             .render(area, buffer);
