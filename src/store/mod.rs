@@ -56,6 +56,10 @@ impl Store {
         format!("'{}' store not found.", store_key)
     }
 
+    // prevent using `get_nested_store_mut` for getters with e.g:
+    // fn get_value(&mut self) {
+    //   self.store.get("store_key", "field")
+    // }
     pub fn get<T: Clone + 'static>(&self, store_key: &str, field: &str) -> T {
         self.get_nested_store(store_key)
             .get(field)
