@@ -36,7 +36,7 @@ impl DirectoryItemDetails {
     fn get_container(&self) -> Block<'_> {
         Block::bordered()
             .border_type(BorderType::Rounded)
-            .title("Details")
+            .title(" Details ")
     }
     
     fn get_details(&self) -> Paragraph<'_> {

@@ -46,7 +46,7 @@ impl DirectoryItemPreview {
     fn get_container(&self) -> Block<'_> {
         Block::bordered()
             .border_type(BorderType::Rounded)
-            .title("Preview")
+            .title(" Preview ")
     }
 
     fn get_no_preview(&self) -> Paragraph<'_> {
