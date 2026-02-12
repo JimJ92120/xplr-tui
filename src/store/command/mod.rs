@@ -34,7 +34,7 @@ impl NestedStore for CommandStore {
 
     fn action(&mut self, action: &str) {
         match action {
-            "delete_input_last_char" => self.delete_input_last_char(),
+            "pop_input" => self.pop_input(),
             "clear_prompt" => self.clear_prompt(),
 
             _ => panic!("{}", self.no_action_found(action)),
@@ -43,16 +43,19 @@ impl NestedStore for CommandStore {
 
     fn dispatch(&mut self, action: &str, payload: Box<dyn Any>) {
         match action {
-            "type_input" => self.type_input(
+            "type" => self.type_input(
                 payload.downcast_ref::<char>().unwrap().clone()
             ),
-            "run_command" => self.run_command(
+            "run" => self.run_command(
                 payload.downcast_ref::<Command>().unwrap().clone()
             ),
             "copy" => self.copy_file(
                 payload.downcast_ref::<String>().unwrap().clone()
             ),
             "move" => self.move_file_or_directory(
+                payload.downcast_ref::<String>().unwrap().clone()
+            ),
+            "delete" => self.delete_file_or_directory(
                 payload.downcast_ref::<String>().unwrap().clone()
             ),
 
@@ -75,7 +78,7 @@ impl CommandStore {
             self.input.push(char);
         }
     }
-    fn delete_input_last_char(&mut self) {
+    fn pop_input(&mut self) {
         if !self.current_command.is_none()
             && !self.input.is_empty()
         {
@@ -144,6 +147,20 @@ impl CommandStore {
             "Moved '{}' to '{}'.",
             source_path_name,
             new_name,
+        ); 
+    }
+
+    fn delete_file_or_directory(&mut self, source_path_name: String) {
+        // caller to match self.current_command
+        let _ = CommandController::delete_file_or_directory(
+            source_path_name.clone(),
+        );
+
+        self.current_command = None;
+        self.input = String::new();
+        self.prompt = format!(
+            "Deleted '{}'.",
+            source_path_name
         ); 
     }
 }

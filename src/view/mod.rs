@@ -111,9 +111,9 @@ impl View {
 
                 if key_event.modifiers.contains(KeyModifiers::ALT) {
                     match key_event.code {
-                        KeyCode::Char('1') => store.dispatch(StoreType::Command, "run_command", Box::new(Command::Copy)),
-                        KeyCode::Char('2') => store.dispatch(StoreType::Command, "run_command", Box::new(Command::Move)),
-                        KeyCode::Char('4') => store.dispatch(StoreType::Command, "run_command", Box::new(Command::Delete)),
+                        KeyCode::Char('1') => store.dispatch(StoreType::Command, "run", Box::new(Command::Copy)),
+                        KeyCode::Char('2') => store.dispatch(StoreType::Command, "run", Box::new(Command::Move)),
+                        KeyCode::Char('3') => store.dispatch(StoreType::Command, "run", Box::new(Command::Delete)),
                     
                         _ => {}
                     };
@@ -129,8 +129,8 @@ impl View {
                         KeyCode::Right => store.action(StoreType::Directory, "load_next_directory"),
                         KeyCode::Left => store.action(StoreType::Directory, "load_previous_directory"),
 
-                        KeyCode::Char(char) => store.dispatch(StoreType::Command, "type_input", Box::new(char)),
-                        KeyCode::Backspace => store.action(StoreType::Command, "delete_input_last_char"),
+                        KeyCode::Char(char) => store.dispatch(StoreType::Command, "type", Box::new(char)),
+                        KeyCode::Backspace => store.action(StoreType::Command, "pop_input"),
 
                         KeyCode::Enter => {
                             // possibly move logic as to Store::CommandStore
@@ -155,8 +155,11 @@ impl View {
                                     "move",
                                     Box::new(selected_item.path_name)
                                 ),
-
-                                Some(Command::Delete) => (),
+                                Some(Command::Delete) => store.dispatch(
+                                    StoreType::Command,
+                                    "delete",
+                                    Box::new(selected_item.path_name)
+                                ),
 
                                 _ => (),
                             };
