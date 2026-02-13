@@ -1,8 +1,9 @@
 use std::{
     env,
-    fs,
+    fs::{ self, metadata },
     io::{ Result },
-    path::{ Path }
+    path::{ Path, PathBuf },
+    os::unix::fs::{ PermissionsExt }
 };
 
 use crate::{
@@ -57,13 +58,15 @@ impl DirectoryController {
         let directory_path = Path::new(&directory_path_name);
         let directory_content: DirectoryContent = fs::read_dir(directory_path)?
             .map(|entry| {
-                let path_name = entry.unwrap().path().display().to_string();
+                let entry = entry.expect(&format!("Invalid entry in {}.", directory_path_name));
+                let path_name = entry.path().display().to_string();
 
                 DirectoryItem {
                     name: Self::get_formatted_path_name(path_name.clone()),
                     path_name: path_name.clone(),
                     item_type: Self::get_content_type(Path::new(&path_name))
-                        .expect(&format!("Unable to fetch content type for '{}'.", path_name))
+                    .expect(&format!("Unable to fetch content type for '{}'.", path_name)),
+                    permissions: Self::get_formatted_permissions(entry.path()),
                 }
             })
             .collect();
@@ -98,5 +101,41 @@ impl DirectoryController {
             Some((_, name)) => name.to_string(),
             None => path_name
         }
+    }
+
+    fn get_formatted_permissions(entry_path: PathBuf) -> String {
+        let metadata = metadata(&entry_path)
+            .expect(&format!("Unable to retrieve '{}' metadata.", entry_path.display().to_string()));
+        let permissions_mode = metadata.permissions().mode();
+
+        let user = [
+            if permissions_mode & 0o400 != 0 { 'r' } else { '-' },
+            if permissions_mode & 0o200 != 0 { 'w' } else { '-' },
+            if permissions_mode & 0o100 != 0 { 'x' } else { '-' },
+        ];
+        let group = [
+            if permissions_mode & 0o040 != 0 { 'r' } else { '-' },
+            if permissions_mode & 0o020 != 0 { 'w' } else { '-' },
+            if permissions_mode & 0o010 != 0 { 'x' } else { '-' },
+        ];
+        let other = [
+            if permissions_mode & 0o004 != 0 { 'r' } else { '-' },
+            if permissions_mode & 0o002 != 0 { 'w' } else { '-' },
+            if permissions_mode & 0o001 != 0 { 'x' } else { '-' },
+        ];
+
+        let file_type = if metadata.is_dir() {
+            'd'
+        } else {
+            '-'
+        };
+
+        format!(
+            "{}{}{}{}", 
+            file_type, 
+            user.iter().collect::<String>(),
+            group.iter().collect::<String>(),
+            other.iter().collect::<String>()
+        )
     }
 }

@@ -70,11 +70,12 @@ impl DirectoryContent {
     }
 
     fn get_list_item(&self, item: DirectoryItem, index: usize) -> Line<'_> {
-        let item_content = if DirectoryItemType::Directory == item.item_type {
-            format!("{}/", item.name)
-        } else {
-            item.name
-        };
+        let mut item_content = format!("{} {}", item.permissions, item.name);
+        
+        if DirectoryItemType::Directory == item.item_type {
+            item_content.push('/');
+        }
+
         let line = Line::from(item_content);
 
         if self.data.selected_item_index == index {

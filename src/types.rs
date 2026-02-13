@@ -8,7 +8,8 @@ pub enum DirectoryItemType {
 pub struct DirectoryItem {
     pub name: String,
     pub path_name: String,
-    pub item_type: DirectoryItemType, 
+    pub item_type: DirectoryItemType,
+    pub permissions: String,
 }
 
 pub type DirectoryContent = Vec<DirectoryItem>;
