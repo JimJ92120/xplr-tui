@@ -125,6 +125,11 @@ impl DirectoryStore {
 
         match self.selected_item() {
             Some(selected_item) => {
+                // maybe move to DirectoryController to further prevent fetching non-readable items
+                if !selected_item.can_read {
+                    return;
+                }
+
                 if DirectoryItemType::Directory == selected_item.item_type {
                     let next_directory_path_name = selected_item.path_name.clone();
 

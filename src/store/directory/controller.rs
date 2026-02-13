@@ -72,7 +72,7 @@ impl DirectoryController {
                     path_name: path_name.clone(),
                     item_type: item_type.clone(),
                     permissions: Self::get_formatted_permissions(permissions_mode, item_type),
-                    can_read: Self::can_read_item(permissions_mode),
+                    can_read: Self::can_read(permissions_mode),
                 }
             })
             .collect();
@@ -141,7 +141,7 @@ impl DirectoryController {
         )
     }
 
-    fn can_read_item(permissions_mode: u32) -> bool {
+    fn can_read(permissions_mode: u32) -> bool {
         permissions_mode & 0o400 != 0
     }
 }
