@@ -1,14 +1,13 @@
 use ratatui::{
     buffer::{ Buffer },
     layout::{ Constraint, Layout, Rect },
-    widgets::{ Widget, Paragraph }
+    widgets::{ Widget }
 };
 
 use crate::{
     types::{ DirectoryItem, Directory, DirectoryList },
     components::{
         directory_content::{ DirectoryContent, DirectoryContentData },
-        directory_item_details::{ DirectoryItemDetails, DirectoryItemDetailsData },
         directory_item_preview::{ DirectoryItemPreview, DirectoryItemPreviewData }
     }
 };
@@ -64,34 +63,14 @@ impl Content {
     fn render_right_container(&self, area: Rect, buffer: &mut Buffer) {
         let ContentData {
             selected_item,
+            preview,
             ..
         } = self.data.clone();
 
-        match selected_item {
-            Some(selected_item) => {
-                let ContentData {
-                    preview,
-                    ..
-                } = self.data.clone();
-                let [details_container, preview_container] = Layout::vertical([
-                    Constraint::Length(5),
-                    Constraint::Fill(1),
-                ]).areas(area);
-
-                DirectoryItemDetails::new(DirectoryItemDetailsData {
-                    selected_item: selected_item.clone()
-                })
-                    .render(details_container, buffer);
-                DirectoryItemPreview::new(DirectoryItemPreviewData {
-                    preview: preview.clone(),
-                    selected_item: selected_item.clone(),
-                })
-                    .render(preview_container, buffer);
-            },
-            None => {
-                Paragraph::new("No item selected.")
-                    .render(area, buffer);
-            }
-        }
+        DirectoryItemPreview::new(DirectoryItemPreviewData {
+            preview: preview.clone(),
+            selected_item: selected_item.clone(),
+        })
+            .render(area, buffer);
     }
 }

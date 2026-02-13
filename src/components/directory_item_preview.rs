@@ -16,7 +16,7 @@ use super::{
 
 #[derive(Clone)]
 pub struct DirectoryItemPreviewData {
-    pub selected_item: DirectoryItem,
+    pub selected_item: Option<DirectoryItem>,
     pub preview: String,
 }
 
@@ -25,18 +25,16 @@ pub struct DirectoryItemPreview {
 }
 
 impl Widget for DirectoryItemPreview {
-    fn render(self, area: Rect, buffer: &mut Buffer) {
-        if DirectoryItemType::File != self.data.selected_item.item_type {
-            return;
-        }
-        
-        let preview = if "" == self.data.preview {
-            self.get_no_preview()
+    fn render(self, area: Rect, buffer: &mut Buffer) {       
+        let content = if self.data.selected_item.is_none()
+            ||  "" == self.data.preview
+        {
+            "No preview available."
         } else {
-            self.get_preview()
+            &self.data.preview
         };
 
-        preview
+        Paragraph::new(content)
             .block(BoxContainer::new(String::from("Preview")))
             .render(area, buffer);
     }
@@ -47,13 +45,5 @@ impl DirectoryItemPreview {
         Self {
             data
         }
-    }
-
-    fn get_no_preview(&self) -> Paragraph<'_> {
-        Paragraph::new("No preview available.")
-    }
-
-    fn get_preview(&self) -> Paragraph<'_> {
-        Paragraph::new(self.data.preview.clone())
     }
 }
