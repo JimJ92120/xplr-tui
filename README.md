@@ -20,7 +20,6 @@ A file manager TUI in `rust`.
 
 Following use cases may throw errors as not implemented:
 
-- permissions
 - logs, error messages to avoid `panic!`
 - directory and large file compression on copy and move
 
