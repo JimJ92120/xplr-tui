@@ -10,6 +10,7 @@ pub struct DirectoryItem {
     pub path_name: String,
     pub item_type: DirectoryItemType,
     pub permissions: String,
+    pub can_read: bool,
 }
 
 pub type DirectoryContent = Vec<DirectoryItem>;

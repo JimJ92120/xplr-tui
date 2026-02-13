@@ -3,7 +3,7 @@ use ratatui::{
     layout::{ Rect },
     text::{ Line },
     widgets::{ Widget, Paragraph },
-    style::{ Color, Stylize }
+    style::{ Color, Style }
 };
 
 use crate::{
@@ -76,13 +76,19 @@ impl DirectoryContent {
             item_content.push('/');
         }
 
-        let line = Line::from(item_content);
+        let is_selected = self.data.selected_item_index == index;
+        // can not chain / update style
+        let style = if !item.can_read && is_selected  {
+            Style::default().fg(Color::DarkGray).bg(Color::Green)
+        } else if !item.can_read {
+            Style::default().fg(Color::DarkGray)
+        } else if is_selected {
+            Style::default().bg(Color::Green)
+        } else {
+            Style::default()
+        };
 
-        if self.data.selected_item_index == index {
-            return line.bg(Color::Green);
-        }
-
-        line
+        Line::from(item_content).style(style)
     }
 
     fn scroll_value(&self, container_height: u16) -> u16 {

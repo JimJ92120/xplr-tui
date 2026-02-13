@@ -2,7 +2,7 @@ use std::{
     env,
     fs::{ self, metadata },
     io::{ Result },
-    path::{ Path, PathBuf },
+    path::{ Path },
     os::unix::fs::{ PermissionsExt }
 };
 
@@ -59,14 +59,20 @@ impl DirectoryController {
         let directory_content: DirectoryContent = fs::read_dir(directory_path)?
             .map(|entry| {
                 let entry = entry.expect(&format!("Invalid entry in {}.", directory_path_name));
-                let path_name = entry.path().display().to_string();
+                let entry_path = entry.path();
+                let path_name = entry_path.display().to_string();
+                let item_type = Self::get_content_type(Path::new(&path_name))
+                    .expect(&format!("Unable to fetch content type for '{}'.", path_name));
+                let metadata = metadata(&entry_path)
+                    .expect(&format!("Unable to retrieve '{}' metadata.", entry_path.display().to_string()));
+                let permissions_mode = metadata.permissions().mode();
 
                 DirectoryItem {
                     name: Self::get_formatted_path_name(path_name.clone()),
                     path_name: path_name.clone(),
-                    item_type: Self::get_content_type(Path::new(&path_name))
-                    .expect(&format!("Unable to fetch content type for '{}'.", path_name)),
-                    permissions: Self::get_formatted_permissions(entry.path()),
+                    item_type: item_type.clone(),
+                    permissions: Self::get_formatted_permissions(permissions_mode, item_type),
+                    can_read: Self::can_read_item(permissions_mode),
                 }
             })
             .collect();
@@ -103,11 +109,7 @@ impl DirectoryController {
         }
     }
 
-    fn get_formatted_permissions(entry_path: PathBuf) -> String {
-        let metadata = metadata(&entry_path)
-            .expect(&format!("Unable to retrieve '{}' metadata.", entry_path.display().to_string()));
-        let permissions_mode = metadata.permissions().mode();
-
+    fn get_formatted_permissions(permissions_mode: u32, item_type: DirectoryItemType) -> String {
         let user = [
             if permissions_mode & 0o400 != 0 { 'r' } else { '-' },
             if permissions_mode & 0o200 != 0 { 'w' } else { '-' },
@@ -124,7 +126,7 @@ impl DirectoryController {
             if permissions_mode & 0o001 != 0 { 'x' } else { '-' },
         ];
 
-        let file_type = if metadata.is_dir() {
+        let file_type = if DirectoryItemType::Directory == item_type {
             'd'
         } else {
             '-'
@@ -137,5 +139,9 @@ impl DirectoryController {
             group.iter().collect::<String>(),
             other.iter().collect::<String>()
         )
+    }
+
+    fn can_read_item(permissions_mode: u32) -> bool {
+        permissions_mode & 0o400 != 0
     }
 }
