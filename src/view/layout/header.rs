@@ -6,7 +6,9 @@ use ratatui::{
 
 use crate::{
     components::{
-        base
+        base:: {
+            box_container::{ BoxContainer }
+        }
     }
 };
 
@@ -20,7 +22,7 @@ pub struct Header {
 
 impl Widget for Header {
     fn render(self, area: Rect, buffer: &mut Buffer) {
-        let container = base::box_container(self.data.title);
+        let container = BoxContainer::new(self.data.title);
 
         Paragraph::new("Use ▲ ▼ to select an item and ◄ ► to navigate directories")
             .block(container)

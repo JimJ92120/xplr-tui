@@ -10,7 +10,11 @@ use crate::{
     types::{ Directory, DirectoryItem, DirectoryItemType, DirectoryList }
 };
 
-use super::base;
+use super::{
+    base::{ 
+        box_container::{ BoxContainer }
+    }
+};
 
 #[derive(Clone)]
 pub struct DirectoryContentData {
@@ -38,7 +42,7 @@ impl Widget for DirectoryContent {
         };
 
         list
-            .block(base::box_container(title))
+            .block(BoxContainer::new(title))
             .scroll((self.scroll_value(area.height), 0))
             .render(area, buffer);
     }

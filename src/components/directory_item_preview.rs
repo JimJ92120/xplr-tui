@@ -8,7 +8,11 @@ use crate::{
     types::{ DirectoryItem, DirectoryItemType },
 };
 
-use super::base;
+use super::{
+    base::{ 
+        box_container::{ BoxContainer }
+    }
+};
 
 #[derive(Clone)]
 pub struct DirectoryItemPreviewData {
@@ -33,7 +37,7 @@ impl Widget for DirectoryItemPreview {
         };
 
         preview
-            .block(base::box_container(String::from("Preview")))
+            .block(BoxContainer::new(String::from("Preview")))
             .render(area, buffer);
     }
 }

@@ -9,7 +9,11 @@ use crate::{
     types::{ DirectoryItem }
 };
 
-use super::base;
+use super::{
+    base::{
+        box_container::{ BoxContainer }
+    }
+};
 
 #[derive(Clone)]
 pub struct DirectoryItemDetailsData {
@@ -23,7 +27,7 @@ pub struct DirectoryItemDetails {
 impl Widget for DirectoryItemDetails {
     fn render(self, area: Rect, buffer: &mut Buffer) {
         self.get_details()
-            .block(base::box_container(String::from("Details")))
+            .block(BoxContainer::new(String::from("Details")))
             .render(area, buffer);
     }
 }
