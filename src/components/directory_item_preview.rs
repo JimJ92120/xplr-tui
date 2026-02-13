@@ -5,7 +5,7 @@ use ratatui::{
 };
 
 use crate::{
-    types::{ DirectoryItem, DirectoryItemType },
+    types::{ DirectoryItem },
 };
 
 use super::{
